@@ -1,0 +1,41 @@
+name: Publication du site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "5 4 * * *"    # vers 6 h, heure de Paris
+    - cron: "5 17 * * *"   # vers 19 h, heure de Paris
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Préparer les documents ouverts à ce jour
+        env:
+          CLE_SITE: ${{ secrets.CLE_SITE }}
+        run: python3 outils/publier.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deployer:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4
