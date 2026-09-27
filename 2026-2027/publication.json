@@ -19,6 +19,27 @@
         {"libelle": "Corrigé du TP", "fichier": "seance-06/tp-corrige.html", "ouverture": "2026-09-29T06:00",
          "annexes": ["seance-06/img/s06-etape8.png", "seance-06/img/s06-final.png"]}
       ]
+    },
+    {
+      "titre": "Séance 7 · Bordures, espacements et marges",
+      "documents": [
+        {"libelle": "Cours : chaque élément est une boîte", "fichier": "seance-07/cours.html", "ouverture": "2026-10-05T06:00",
+         "annexes": ["seance-07/img/s07-boites.png", "seance-07/img/s07-portfolio-apres.png"]},
+        {"libelle": "TP : support TechSolutions, version 2", "fichier": "seance-07/tp.html", "ouverture": "2026-10-05T06:00",
+         "annexes": ["seance-07/img/s07-partieA.png"]},
+        {"libelle": "Corrigé du TP", "fichier": "seance-07/tp-corrige.html", "ouverture": "2026-10-06T06:00",
+         "annexes": ["seance-07/img/s07-defis.png"]}
+      ]
+    },
+    {
+      "titre": "Séance 8 · Révisions et projet TechSolutions",
+      "documents": [
+        {"libelle": "Préparer le DS1 : exercices d'entraînement", "fichier": "seance-08/revisions.html", "ouverture": "2026-10-12T06:00"},
+        {"libelle": "Corrigé des exercices d'entraînement", "fichier": "seance-08/revisions-corrige.html", "ouverture": "2026-10-12T19:00"},
+        {"libelle": "TP : projet TechSolutions, étape 1 (maquette de la gestion de parc)", "fichier": "seance-08/tp.html", "ouverture": "2026-10-12T06:00",
+         "annexes": ["seance-08/img/s08-techsolutions.png", "seance-08/fichiers/logo-techsolutions.png"]},
+        {"libelle": "Corrigé du TP", "fichier": "seance-08/tp-corrige.html", "ouverture": "2026-11-02T06:00"}
+      ]
     }
   ]
 }
