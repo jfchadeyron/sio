@@ -80,6 +80,7 @@ def publier_annee(annee, cle, maintenant):
 
 
 def gabarit(titre, presentation, corps):
+    sous_titre = f'<p class="sous-titre">{html.escape(presentation)}</p>' if presentation else ""
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -106,7 +107,7 @@ a {{ color: #13305a; }}
 <body>
 <div class="entete"><span>BTS SIO 1<sup>re</sup> année · Bloc 1</span><span class="droite">Développement web</span></div>
 <h1>{html.escape(titre)}</h1>
-<p class="sous-titre">{html.escape(presentation)}</p>
+{sous_titre}
 {corps}
 <div class="pied">BTS SIO · Bloc 1 · Support et mise à disposition de services informatiques</div>
 </body>
