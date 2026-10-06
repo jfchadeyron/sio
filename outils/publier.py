@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """Prépare le site : ne déchiffre que les documents dont la date d'ouverture est passée.
 
+Un document marqué "clair": true dans publication.json n'est pas chiffré : il est
+copié tel quel depuis ANNEE/clair/<chemin>.
+
 Lancé par GitHub Actions chaque jour. La clé de déchiffrement est lue dans la
 variable d'environnement CLE_SITE (secret du dépôt). Aucune dépendance externe :
 Python 3 et openssl suffisent.
@@ -28,6 +31,11 @@ def dechiffrer(source, cible, cle):
                    check=True, env={**os.environ, "CLE_SITE": cle})
 
 
+def copier(source, cible):
+    cible.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, cible)
+
+
 def ouvert(doc, maintenant):
     return datetime.fromisoformat(doc["ouverture"]).replace(tzinfo=FUSEAU) <= maintenant
 
@@ -50,6 +58,11 @@ def publier_annee(annee, cle, maintenant):
 
     for fichier, doc in retenus.items():
         source = doc.get("source", fichier)
+        if doc.get("clair"):
+            copier(dossier / "clair" / source, sortie / fichier)
+            for annexe in doc.get("annexes", []):
+                copier(dossier / "clair" / annexe, sortie / annexe)
+            continue
         dechiffrer(coffre / (source + ".enc"), sortie / fichier, cle)
         for annexe in doc.get("annexes", []):
             dechiffrer(coffre / (annexe + ".enc"), sortie / annexe, cle)

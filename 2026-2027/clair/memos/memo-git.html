@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mémo Git et GitHub</title>
+<style>
+@page { size: A4; margin: 11mm 12mm 10mm 12mm; }
+html { background: #ffffff; }
+body {
+  margin: 0 auto;
+  max-width: 1040px;
+  padding: 22px 26px 36px;
+  font-family: Cambria, Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #1b1b1b;
+  background: #ffffff;
+}
+.entete {
+  display: table;
+  width: 100%;
+  border-bottom: 1px solid #1b1b1b;
+  padding-bottom: 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12.5px;
+  color: #3a3a3a;
+}
+.entete span { display: table-cell; vertical-align: bottom; }
+.entete .droite { text-align: right; }
+h1 { font-size: 24px; line-height: 1.25; font-weight: normal; color: #13305a; margin: 16px 0 4px; }
+.sous-titre {
+  font-style: italic;
+  color: #4a4a4a;
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 3px double #b8c2cc;
+}
+h2 { color: #13305a; border-bottom: 1px solid #b8c2cc; page-break-after: avoid; }
+p { margin: 0 0 8px; }
+ul, ol { margin: 4px 0 8px; padding-left: 20px; }
+li { margin: 2px 0; }
+a { color: #13305a; }
+code, kbd {
+  font-family: Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: .88em;
+  background: #f1f1f1;
+  padding: 0 3px;
+}
+kbd { border: 1px solid #b5b5b5; background: #fafafa; padding: 0 4px; }
+table { border-collapse: collapse; width: 100%; page-break-inside: avoid; }
+th, td { border: 1px solid #9ea8b2; text-align: left; vertical-align: top; }
+th { background: #e9edf1; font-weight: bold; }
+td.cmd { font-family: Consolas, "Liberation Mono", "Courier New", monospace; font-size: .88em; background: #f7f7f5; white-space: nowrap; }
+.petit { font-size: 13.5px; }
+.gris-txt { color: #666; }
+.schema { text-align: center; margin: 4px 0 8px; }
+.schema svg { max-width: 100%; height: auto; }
+
+.bloc {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #9ea8b2;
+  padding: 5px 10px 2px;
+  margin: 0 0 10px;
+}
+.bloc h2 { font-size: 15px; margin: 0 0 6px; padding-bottom: 2px; }
+.bloc table { font-size: 13px; margin: 4px 0 7px; }
+.bloc th, .bloc td { padding: 3px 6px; }
+.bloc p, .bloc li { font-size: 13.5px; margin-bottom: 4px; }
+.bloc.retenir { border: 2px solid #13305a; }
+.cols { display: flex; gap: 16px; align-items: flex-start; }
+.col { flex: 1; min-width: 0; }
+.pied {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid #b8c2cc;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  color: #6a6a6a;
+  text-align: center;
+}
+.remplir { font-size: 13.5px; margin: 2px 0 6px; }
+
+@media (max-width: 760px) {
+  body { padding: 14px 14px 30px; font-size: 16px; }
+  h1 { font-size: 22px; }
+  .cols { display: block; }
+  td.cmd { white-space: normal; word-break: break-word; }
+}
+@media print {
+  body { max-width: none; padding: 0; font-size: 9.5pt; line-height: 1.28; }
+  h1 { font-size: 16pt; margin-top: 6px; margin-bottom: 2px; }
+  .sous-titre { font-size: 10pt; margin-bottom: 6px; padding-bottom: 5px; }
+  .schema { margin: 2px 0 5px; }
+  .schema svg { width: 94%; }
+  .bloc { margin-bottom: 9px; padding: 5px 9px 2px; }
+  .bloc h2 { font-size: 10.5pt; margin-bottom: 5px; }
+  .bloc table { font-size: 9pt; margin: 3px 0 5px; }
+  .bloc th, .bloc td { padding: 2px 5px; }
+  .bloc p, .bloc li { font-size: 9.2pt; margin-bottom: 3px; }
+  .petit, .remplir { font-size: 9.2pt; }
+  .pied { font-size: 7.5pt; margin-top: 4px; }
+  a { color: #1b1b1b; text-decoration: none; }
+}
+</style>
+</head>
+<body>
+<div class="entete"><span>BTS SIO 1<sup>re</sup> année · Bloc 1</span><span class="droite">Git et GitHub · Fiche mémo</span></div>
+
+<h1>Mémo Git et GitHub</h1>
+<p class="sous-titre">Les commandes de base pour sauvegarder ton portfolio et le publier en ligne</p>
+
+<div class="schema">
+<svg viewBox="0 30 1000 120" width="1000" height="120" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" font-size="14" role="img" aria-label="git add prépare les fichiers, git commit les enregistre dans l'historique de l'ordinateur, git push les envoie sur GitHub, git pull les récupère depuis GitHub">
+<defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#13305a"/></marker></defs>
+<rect x="10" y="36" width="170" height="56" fill="#ffffff" stroke="#13305a" stroke-width="1.5"/>
+<text x="95" y="60" text-anchor="middle" font-weight="bold" fill="#1b1b1b">Mes fichiers</text>
+<text x="95" y="79" text-anchor="middle" fill="#555555" font-size="13">le dossier dans VS Code</text>
+<rect x="280" y="36" width="170" height="56" fill="#f7f7f5" stroke="#9ea8b2"/>
+<text x="365" y="60" text-anchor="middle" font-weight="bold" fill="#1b1b1b">Préparés</text>
+<text x="365" y="79" text-anchor="middle" fill="#555555" font-size="13">prêts à être enregistrés</text>
+<rect x="550" y="36" width="170" height="56" fill="#f7f7f5" stroke="#9ea8b2"/>
+<text x="635" y="60" text-anchor="middle" font-weight="bold" fill="#1b1b1b">Historique</text>
+<text x="635" y="79" text-anchor="middle" fill="#555555" font-size="13">les commits, sur mon PC</text>
+<rect x="820" y="36" width="170" height="56" fill="#e9edf1" stroke="#13305a" stroke-width="1.5"/>
+<text x="905" y="60" text-anchor="middle" font-weight="bold" fill="#1b1b1b">GitHub</text>
+<text x="905" y="79" text-anchor="middle" fill="#555555" font-size="13">la copie en ligne</text>
+<line x1="182" y1="70" x2="276" y2="70" stroke="#13305a" stroke-width="1.5" marker-end="url(#fl)"/>
+<text x="229" y="62" text-anchor="middle" fill="#13305a" font-family="Consolas, 'Liberation Mono', monospace">git add</text>
+<line x1="452" y1="70" x2="546" y2="70" stroke="#13305a" stroke-width="1.5" marker-end="url(#fl)"/>
+<text x="499" y="62" text-anchor="middle" fill="#13305a" font-family="Consolas, 'Liberation Mono', monospace">git commit</text>
+<line x1="722" y1="70" x2="816" y2="70" stroke="#13305a" stroke-width="1.5" marker-end="url(#fl)"/>
+<text x="769" y="62" text-anchor="middle" fill="#13305a" font-family="Consolas, 'Liberation Mono', monospace">git push</text>
+<polyline points="905,93 905,118 95,118 95,97" fill="none" stroke="#13305a" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#fl)"/>
+<text x="500" y="140" text-anchor="middle" fill="#13305a"><tspan font-family="Consolas, 'Liberation Mono', monospace">git pull</tspan> : récupère sur GitHub ce que mon ordinateur n'a pas encore</text>
+</svg>
+</div>
+
+<div class="bloc">
+<h2>1. Une seule fois par ordinateur</h2>
+<table>
+<tr><td class="cmd">git --version</td><td>Vérifier que Git est installé.</td></tr>
+<tr><td class="cmd">git config --global user.name "Prénom Nom"</td><td>Mon nom, qui signe mes commits.</td></tr>
+<tr><td class="cmd">git config --global user.email "adresse"</td><td>Mon e-mail, <strong>le même que sur GitHub</strong>.</td></tr>
+<tr><td class="cmd">git config --global --list</td><td>Vérifier mes réglages (nom, e-mail).</td></tr>
+</table>
+</div>
+
+<div class="cols">
+<div class="col">
+
+<div class="bloc">
+<h2>2. Une seule fois par projet</h2>
+<table>
+<tr><td class="cmd">git clone adresse-du-depot</td><td>Télécharger le dépôt. Crée le dossier, déjà relié à GitHub.</td></tr>
+</table>
+<p>L'adresse se copie sur GitHub : bouton vert <strong>Code</strong>, onglet <strong>HTTPS</strong>. Ensuite, dans VS Code : <strong>Fichier</strong>, <strong>Ouvrir le dossier</strong>, puis <strong>Terminal</strong>, <strong>Nouveau terminal</strong>.</p>
+</div>
+
+<div class="bloc">
+<h2>3. À chaque séance</h2>
+<table>
+<tr><td class="cmd">git pull</td><td><strong>En arrivant</strong> : récupérer depuis GitHub.</td></tr>
+<tr><td class="cmd">git status</td><td>Où j'en suis ? Ne casse rien.</td></tr>
+<tr><td class="cmd">git add .</td><td>Préparer tout ce qui a changé.</td></tr>
+<tr><td class="cmd">git commit -m "message"</td><td>Enregistrer une version, sur mon PC.</td></tr>
+<tr><td class="cmd">git push</td><td><strong>En partant</strong> : envoyer sur GitHub.</td></tr>
+</table>
+</div>
+
+<div class="bloc">
+<h2>4. Consulter et se repérer</h2>
+<table>
+<tr><td class="cmd">git log --oneline</td><td>L'historique, une ligne par commit (<kbd>q</kbd> pour sortir).</td></tr>
+<tr><td class="cmd">pwd</td><td>Dans quel dossier suis-je ?</td></tr>
+<tr><td class="cmd">ls</td><td>Que contient ce dossier ?</td></tr>
+<tr><td class="cmd">cd portfolio</td><td>Entrer dans le dossier <code>portfolio</code>.</td></tr>
+<tr><td class="cmd">cd ..</td><td>Remonter d'un niveau.</td></tr>
+</table>
+</div>
+
+</div>
+<div class="col">
+
+<div class="bloc retenir">
+<h2>5. À retenir</h2>
+<ul>
+<li><strong>Un commit n'est pas un push.</strong> Sans <code>git push</code>, mon travail reste sur mon ordinateur.</li>
+<li><strong>Le message dit ce que j'ai fait</strong>, toujours entre guillemets : <code>"Ajout de la section Contact"</code>. Jamais <code>"modif"</code> ni <code>"test"</code>. L'historique est lu et évalué.</li>
+<li><strong>Jamais de mot de passe dans un dépôt.</strong> L'historique garde tout, même un fichier supprimé ensuite.</li>
+</ul>
+</div>
+
+<div class="bloc">
+<h2>6. Publier avec GitHub Pages</h2>
+<table>
+<tr><td>Activer</td><td><strong>Settings</strong>, <strong>Pages</strong>, <em>Deploy from a branch</em>, <strong>main</strong>, <strong>/ (root)</strong>, <strong>Save</strong>.</td></tr>
+<tr><td>Adresse</td><td><code>https://pseudo.github.io/nom-du-depot/</code></td></tr>
+<tr><td>Conditions</td><td>Un fichier <code>index.html</code> à la racine, un dépôt <strong>public</strong>.</td></tr>
+<tr><td>Mise à jour</td><td>Automatique environ une minute après chaque push.</td></tr>
+</table>
+<p class="remplir">Mon site : https://______________.github.io/______________/</p>
+</div>
+
+</div>
+</div>
+
+<div class="pied">BTS SIO · Bloc 1 · Support et mise à disposition de services informatiques</div>
+</body>
+</html>

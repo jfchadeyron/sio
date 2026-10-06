@@ -4,6 +4,7 @@
 Usage : CLE_SITE=... python3 outils/chiffrer.py DOSSIER_EN_CLAIR [ANNEE]
 Chaque fichier cité dans ANNEE/publication.json (source et annexes) est lu dans
 DOSSIER_EN_CLAIR et écrit chiffré dans ANNEE/coffre/<chemin>.enc.
+Les documents marqués "clair": true sont ignorés : ils sont publiés depuis ANNEE/clair/.
 """
 import json
 import os
@@ -23,6 +24,8 @@ def main():
     chemins = set()
     for rubrique in manifeste["rubriques"]:
         for doc in rubrique["documents"]:
+            if doc.get("clair"):
+                continue
             chemins.add(doc.get("source", doc["fichier"]))
             chemins.update(doc.get("annexes", []))
     for chemin in sorted(chemins):
