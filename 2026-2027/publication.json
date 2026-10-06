@@ -6,6 +6,7 @@
       "titre": "Fiches mémo",
       "fixe": true,
       "documents": [
+        {"libelle": "Mémo HTML", "fichier": "memos/memo-html.html", "ouverture": "2026-10-06T06:00"},
         {"libelle": "Mémo CSS", "fichier": "memos/memo-css.html", "source": "memos/memo-css-v1.html", "ouverture": "2026-09-27T00:00"},
         {"libelle": "Mémo CSS", "fichier": "memos/memo-css.html", "source": "memos/memo-css-v2.html", "ouverture": "2026-10-05T06:00"}
       ]
