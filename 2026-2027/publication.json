@@ -5,10 +5,51 @@
       "titre": "Fiches mémo",
       "fixe": true,
       "documents": [
-        {"libelle": "Mémo HTML", "fichier": "memos/memo-html.html", "ouverture": "2026-10-06T06:00"},
-        {"libelle": "Mémo CSS", "fichier": "memos/memo-css.html", "source": "memos/memo-css-v1.html", "ouverture": "2026-09-27T00:00"},
-        {"libelle": "Mémo CSS", "fichier": "memos/memo-css.html", "source": "memos/memo-css-v2.html", "ouverture": "2026-10-05T06:00"},
-        {"libelle": "Mémo Git et GitHub", "fichier": "memos/memo-git.html", "clair": true, "ouverture": "2026-10-06T00:00"}
+        {
+          "libelle": "Mémo HTML",
+          "fichier": "memos/memo-html.html",
+          "ouverture": "2026-10-06T06:00"
+        },
+        {
+          "libelle": "Mémo CSS",
+          "fichier": "memos/memo-css.html",
+          "source": "memos/memo-css-v1.html",
+          "ouverture": "2026-09-27T00:00"
+        },
+        {
+          "libelle": "Mémo CSS",
+          "fichier": "memos/memo-css.html",
+          "source": "memos/memo-css-v2.html",
+          "ouverture": "2026-10-05T06:00"
+        },
+        {
+          "libelle": "Mémo Git et GitHub",
+          "fichier": "memos/memo-git.html",
+          "clair": true,
+          "ouverture": "2026-10-06T00:00"
+        }
+      ]
+    },
+    {
+      "titre": "Séance 8 : le site vitrine TechSolutions",
+      "documents": [
+        {
+          "libelle": "Cours : le site vitrine et le menu horizontal",
+          "fichier": "seance-08/cours.html",
+          "clair": true,
+          "ouverture": "2026-10-08T00:00"
+        },
+        {
+          "libelle": "TP : le squelette du site vitrine TechSolutions",
+          "fichier": "seance-08/tp-vitrine.html",
+          "clair": true,
+          "ouverture": "2026-10-08T00:00",
+          "annexes": [
+            "seance-08/img/vitrine-niveau1.png",
+            "seance-08/img/vitrine-index.png",
+            "seance-08/img/vitrine-services.png"
+          ]
+        }
       ]
     }
   ]
