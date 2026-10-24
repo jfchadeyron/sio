@@ -89,31 +89,36 @@
     {
      "libelle": "Aide-mémoire PHP et SQL",
      "fichier": "memos/memo-php-sql.html",
-     "ouverture": "2026-11-03T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-03T00:00",
      "source": "memos/memo-php-sql-v1.html"
     },
     {
      "libelle": "Aide-mémoire PHP et SQL",
      "fichier": "memos/memo-php-sql.html",
-     "ouverture": "2026-11-10T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-10T00:00",
      "source": "memos/memo-php-sql-v2.html"
     },
     {
      "libelle": "Aide-mémoire PHP et SQL",
      "fichier": "memos/memo-php-sql.html",
-     "ouverture": "2026-11-17T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-17T00:00",
      "source": "memos/memo-php-sql-v3.html"
     },
     {
      "libelle": "Aide-mémoire PHP et SQL",
      "fichier": "memos/memo-php-sql.html",
-     "ouverture": "2026-11-24T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-24T00:00",
      "source": "memos/memo-php-sql-v4.html"
     },
     {
      "libelle": "Aide-mémoire PHP et SQL",
      "fichier": "memos/memo-php-sql.html",
-     "ouverture": "2026-12-01T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-12-01T00:00",
      "source": "memos/memo-php-sql-v5.html"
     }
    ]
@@ -124,12 +129,14 @@
     {
      "libelle": "Guide : installer le serveur local",
      "fichier": "installer-serveur.html",
-     "ouverture": "2026-11-02T00:00"
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-02T00:00"
     },
     {
      "libelle": "TP : le serveur local et le dépôt techsolutions",
      "fichier": "mise-en-route/tp.html",
-     "ouverture": "2026-11-02T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-02T00:00",
      "annexes": [
       "mise-en-route/img/mer-site-localhost.png"
      ]
@@ -142,12 +149,14 @@
     {
      "libelle": "Cours : Premiers pas en PHP",
      "fichier": "seance-09/cours.html",
-     "ouverture": "2026-11-03T00:00"
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-03T00:00"
     },
     {
      "libelle": "TP 9 : Le site vitrine passe en PHP",
      "fichier": "seance-09/tp.html",
-     "ouverture": "2026-11-09T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-09T00:00",
      "annexes": [
       "seance-09/img/s09-test-php.png",
       "seance-09/img/s09-site-localhost.png",
@@ -168,7 +177,8 @@
     {
      "libelle": "Cours : La base de données : MySQL et phpMyAdmin",
      "fichier": "seance-10/cours.html",
-     "ouverture": "2026-11-10T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-10T00:00",
      "annexes": [
       "seance-10/img/s10-pma-nouvelle-base.png"
      ]
@@ -176,7 +186,8 @@
     {
      "libelle": "TP 10 : La table des utilisateurs",
      "fichier": "seance-10/tp.html",
-     "ouverture": "2026-11-16T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-16T00:00",
      "annexes": [
       "seance-10/img/s10-pma-nouvelle-base.png",
       "seance-10/img/s10-pma-sql.png",
@@ -202,7 +213,8 @@
     {
      "libelle": "Cours : PHP lit la base de données",
      "fichier": "seance-11/cours.html",
-     "ouverture": "2026-11-17T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-17T00:00",
      "annexes": [
       "seance-11/img/s11-essai.png"
      ]
@@ -210,7 +222,8 @@
     {
      "libelle": "TP 11 : La page de gestion des utilisateurs",
      "fichier": "seance-11/tp.html",
-     "ouverture": "2026-11-23T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-23T00:00",
      "annexes": [
       "seance-11/img/s11-utilisateurs.png",
       "seance-11/img/s11-entreprise.png"
@@ -229,12 +242,14 @@
     {
      "libelle": "Cours : Le formulaire de connexion",
      "fichier": "seance-12/cours.html",
-     "ouverture": "2026-11-24T00:00"
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-24T00:00"
     },
     {
      "libelle": "TP 12 : L'espace salariés, première version",
      "fichier": "seance-12/tp.html",
-     "ouverture": "2026-11-30T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-11-30T00:00",
      "annexes": [
       "seance-12/img/s12-bienvenue.png",
       "seance-12/img/s12-erreur.png",
@@ -254,12 +269,14 @@
     {
      "libelle": "Cours : Sessions et espace administrateur",
      "fichier": "seance-13/cours.html",
-     "ouverture": "2026-12-01T00:00"
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-12-01T00:00"
     },
     {
      "libelle": "TP 13 : Se connecter, se déconnecter, gérer les comptes",
      "fichier": "seance-13/tp.html",
-     "ouverture": "2026-12-07T00:00",
+     "ouverture": "2026-10-24T00:00",
+     "ouverture_prevue": "2026-12-07T00:00",
      "annexes": [
       "seance-13/img/s13-espace-salarie.png",
       "seance-13/img/s13-espace-admin.png",
