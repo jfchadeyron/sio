@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Développement web : le site TechSolutions | BTS SIO, Bloc 1</title>
+<meta name="description" content="Du site vitrine au site dynamique : ton site TechSolutions passe sur un serveur, range ses données dans une base MySQL et ouvre un espace réservé aux salariés, avec une connexion par identifiant et mot de passe, et des pages où l&#x27;administrateur gère les comptes. Une notion par semaine, et du temps pour l&#x27;appliquer à ton propre site.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="kind-page">
+<header class="entete">
+  <button class="menu-btn" type="button">Menu</button>
+  <a class="formation" href="index.html">BTS SIO 1<sup>re</sup> année</a>
+  <span class="sep"></span>
+  <a class="bloc" href="index.html">Bloc 1 : Développement web</a>
+  <nav class="raccourcis">
+    <a href="index.html">Progression</a>
+    <a href="installer-serveur.html" data-doc="installer-serveur.html">Installer le serveur</a>
+    <a href="memos/memo-php-sql.html" data-doc="memos/memo-php-sql.html">Aide-mémoire PHP et SQL</a>
+  </nav>
+</header>
+<aside class="sidebar">
+  <nav>
+<div class="nav-section-title">Le module</div>
+<div class="nav-item active"><a class="nav-link" href="index.html"><span>Accueil et progression</span></a></div>
+<div class="nav-item"><a class="nav-link" href="installer-serveur.html" data-doc="installer-serveur.html"><span>Installer le serveur local</span></a></div>
+<div class="nav-section-title">Avant les vacances</div>
+<div class="nav-item"><a class="nav-link" href="seance-08/cours.html" data-doc="seance-08/cours.html"><span class="num">8.</span><span>Le site vitrine et le menu</span></a><a class="nav-tp" href="seance-08/tp-vitrine.html" title="Travaux pratiques" data-doc="seance-08/tp-vitrine.html">TP</a></div>
+<div class="nav-section-title">Le site dynamique TechSolutions</div>
+<div class="nav-item"><a class="nav-link" href="mise-en-route/tp.html" data-doc="mise-en-route/tp.html"><span>Mise en route : le serveur local</span></a></div>
+<div class="nav-item"><a class="nav-link" href="seance-09/cours.html" data-doc="seance-09/cours.html"><span class="num">9.</span><span>Premiers pas en PHP</span></a><a class="nav-tp" href="seance-09/tp.html" title="Travaux pratiques" data-doc="seance-09/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="seance-10/cours.html" data-doc="seance-10/cours.html"><span class="num">10.</span><span>La base de données MySQL</span></a><a class="nav-tp" href="seance-10/tp.html" title="Travaux pratiques" data-doc="seance-10/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="seance-11/cours.html" data-doc="seance-11/cours.html"><span class="num">11.</span><span>PHP lit la base de données</span></a><a class="nav-tp" href="seance-11/tp.html" title="Travaux pratiques" data-doc="seance-11/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="seance-12/cours.html" data-doc="seance-12/cours.html"><span class="num">12.</span><span>Le formulaire de connexion</span></a><a class="nav-tp" href="seance-12/tp.html" title="Travaux pratiques" data-doc="seance-12/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="seance-13/cours.html" data-doc="seance-13/cours.html"><span class="num">13.</span><span>Sessions et administration</span></a><a class="nav-tp" href="seance-13/tp.html" title="Travaux pratiques" data-doc="seance-13/tp.html">TP</a></div>
+<div class="nav-section-title">Fiches mémo</div>
+<div class="nav-item"><a class="nav-link" href="memos/memo-html.html" data-doc="memos/memo-html.html"><span>Mémo HTML</span></a></div>
+<div class="nav-item"><a class="nav-link" href="memos/memo-css.html" data-doc="memos/memo-css.html"><span>Mémo CSS</span></a></div>
+<div class="nav-item"><a class="nav-link" href="memos/memo-git.html" data-doc="memos/memo-git.html"><span>Mémo Git et GitHub</span></a></div>
+<div class="nav-item"><a class="nav-link" href="memos/memo-php-sql.html" data-doc="memos/memo-php-sql.html"><span>Aide-mémoire PHP et SQL</span></a></div>
+  </nav>
+</aside>
+<main class="main">
+
+<header class="hero">
+  <span class="surtitre">BTS SIO 1<sup>re</sup> année, Bloc 1, option SLAM</span>
+  <h1>Développement web : le site TechSolutions</h1>
+  <p class="lead">Du site vitrine au site dynamique : ton site TechSolutions passe sur un serveur, range ses données dans une base MySQL et ouvre un espace réservé aux salariés, avec une connexion par identifiant et mot de passe, et des pages où l'administrateur gère les comptes. Une notion par semaine, et du temps pour l'appliquer à ton propre site.</p>
+  
+</header>
+
+<article class="content">
+<h2 id="objectifs">Objectifs</h2>
+<ol>
+<li>Faire fonctionner un site sur un serveur web local (Apache, PHP, MySQL) et comprendre ce qu'est un site dynamique.</li>
+<li>Écrire des pages en PHP : variables, calculs, fichiers communs, conditions, boucles.</li>
+<li>Créer une base de données MySQL et l'interroger en SQL : lire, ajouter, modifier, supprimer.</li>
+<li>Afficher dans une page des données lues dans la base.</li>
+<li>Réaliser une connexion sécurisée par identifiant et mot de passe, et réserver à l'administrateur la gestion des comptes.</li>
+</ol>
+
+<h2 id="le-rythme-de-la-semaine">Le rythme de la semaine</h2>
+<ul>
+<li><strong>Le cours, en classe entière.</strong> Chaque semaine, une seule notion nouvelle : le cours, puis des exercices guidés que tout le monde fait en même temps, puis un quiz.</li>
+<li><strong>Le TP, en demi-groupe.</strong> La semaine suivante, tu appliques la notion à ton site TechSolutions pendant un TP de 4 heures, en deux séances de 2 heures. Les deux groupes font le même TP la même semaine.</li>
+</ul>
+<div class="table-wrap"><table>
+<thead><tr><th>Qui</th><th>Quand</th><th>Quoi</th></tr></thead>
+<tbody>
+<tr><td>Classe entière</td><td>mardi après-midi</td><td>le cours de la semaine</td></tr>
+<tr><td>Groupe 1</td><td>lundi matin, puis lundi en fin d'après-midi</td><td>le TP, en deux séances de 2 h</td></tr>
+<tr><td>Groupe 2</td><td>lundi en début d'après-midi, puis jeudi après-midi</td><td>le même TP, en deux séances de 2 h</td></tr>
+</tbody>
+</table></div>
+<p>Chaque TP indique un <strong>repère</strong> : ce qui doit être terminé à la fin de ta première séance de 2 h. Si tu es en retard sur ce repère, termine à la maison avant la séance suivante.</p>
+
+<h2 id="comment-travailler">Comment travailler</h2>
+<ul>
+<li><strong>Le serveur.</strong> Ton site fonctionne sur ton ordinateur grâce à XAMPP (Windows, Linux) ou MAMP (Mac) : suis le guide <a href="installer-serveur.html" data-doc="installer-serveur.html">Installer le serveur local</a>. Au début de chaque séance, démarre Apache et MySQL.</li>
+<li><strong>Le dépôt.</strong> Tout le travail se fait dans ton dépôt GitHub <code>techsolutions</code>, rangé dans le dossier web <code>htdocs</code>. Un commit à chaque étape réussie, avec un message clair, et un push à la fin de chaque séance.</li>
+<li><strong>Les exercices guidés</strong> se font dans un dossier à part, <code>htdocs/essais</code>, et une base à part, <code>essais</code> : ils servent à t'entraîner sans abîmer ton site.</li>
+<li><strong>Les TP</strong> ont trois niveaux. Le niveau 1 est le minimum pour suivre la séance suivante ; les niveaux 2 et 3 sont pour ceux qui avancent plus vite, ou pour la maison. Les réponses aux questions s'écrivent dans le fichier <code>reponses.txt</code> de ton dépôt.</li>
+<li><strong>Les corrigés</strong> sont mis en ligne à la fin de la semaine du TP, quand les deux groupes ont terminé. Si tu as pris du retard, repars du corrigé, partie par partie, en t'assurant de comprendre chaque ligne.</li>
+<li><strong>Ton code.</strong> Le code que tu rends doit être le tien, et tu dois pouvoir l'expliquer ligne par ligne : c'est ce qui sera évalué à l'oral de décembre. L'historique de tes commits fait partie de l'évaluation. Souviens-toi de la charte signée en début d'année.</li>
+</ul>
+
+<h2 id="progression">Progression</h2>
+<p>Le site est <strong>cumulatif</strong> : chaque TP part du résultat du précédent. Les supports sont mis en ligne au fil des séances ; ceux qui ne sont pas encore disponibles apparaissent en gris.</p>
+<div class="table-wrap"><table class="progression">
+<thead><tr><th>Séance</th><th>Thème et contenu</th><th>Supports</th></tr></thead>
+<tbody>
+<tr class="module"><td colspan="3">Avant les vacances : le site vitrine</td></tr>
+<tr data-doc="seance-08/cours.html"><td class="num">8</td><td class="theme"><a href="seance-08/cours.html" data-doc="seance-08/cours.html">Le site vitrine et le menu horizontal</a><span class="desc">Conception du site vitrine de TechSolutions, quatre pages reliées par un menu horizontal, charte graphique du client.</span></td><td class="acces"><a href="seance-08/cours.html" data-doc="seance-08/cours.html">Cours</a><a href="seance-08/tp-vitrine.html" data-doc="seance-08/tp-vitrine.html">TP</a></td></tr>
+<tr class="module"><td colspan="3">Le site dynamique TechSolutions</td></tr>
+<tr data-doc="mise-en-route/tp.html"><td class="num">Mise en route</td><td class="theme"><a href="mise-en-route/tp.html" data-doc="mise-en-route/tp.html">Le serveur local et le dépôt techsolutions</a><span class="desc">Installation de XAMPP ou MAMP ; le dépôt techsolutions dans le dossier web ; le site vitrine ouvert par le serveur.</span></td><td class="acces"><a href="installer-serveur.html" data-doc="installer-serveur.html">Guide</a><a href="mise-en-route/tp.html" data-doc="mise-en-route/tp.html">TP</a></td></tr>
+<tr data-doc="seance-09/cours.html"><td class="num">9</td><td class="theme"><a href="seance-09/cours.html" data-doc="seance-09/cours.html">Premiers pas en PHP</a><span class="desc">Site statique et site dynamique ; echo, variables, concaténation, calculs ; le menu, le bas de page et les coordonnées écrits une seule fois avec include.</span></td><td class="acces"><a href="seance-09/cours.html" data-doc="seance-09/cours.html">Cours</a><a href="seance-09/tp.html" data-doc="seance-09/tp.html">TP</a><a href="seance-09/tp-corrige.html" data-doc="seance-09/tp-corrige.html">Corrigé</a></td></tr>
+<tr data-doc="seance-10/cours.html"><td class="num">10</td><td class="theme"><a href="seance-10/cours.html" data-doc="seance-10/cours.html">La base de données : MySQL et phpMyAdmin</a><span class="desc">Base, table, colonne, ligne, clé primaire ; l'empreinte des mots de passe ; phpMyAdmin ; SELECT, INSERT, UPDATE, DELETE ; sauvegarder la base.</span></td><td class="acces"><a href="seance-10/cours.html" data-doc="seance-10/cours.html">Cours</a><a href="seance-10/tp.html" data-doc="seance-10/tp.html">TP</a><a href="seance-10/tp-corrige.html" data-doc="seance-10/tp-corrige.html">Corrigé</a></td></tr>
+<tr data-doc="seance-11/cours.html"><td class="num">11</td><td class="theme"><a href="seance-11/cours.html" data-doc="seance-11/cours.html">PHP lit la base de données</a><span class="desc">La connexion PDO ; query et fetchAll ; les tableaux PHP ; la boucle foreach ; la page de gestion des utilisateurs ; l'équipe lue dans la base.</span></td><td class="acces"><a href="seance-11/cours.html" data-doc="seance-11/cours.html">Cours</a><a href="seance-11/tp.html" data-doc="seance-11/tp.html">TP</a><a href="seance-11/tp-corrige.html" data-doc="seance-11/tp-corrige.html">Corrigé</a></td></tr>
+<tr data-doc="seance-12/cours.html"><td class="num">12</td><td class="theme"><a href="seance-12/cours.html" data-doc="seance-12/cours.html">Le formulaire de connexion</a><span class="desc">Les formulaires ; GET et POST ; $_POST ; if et else ; la requête préparée et l'injection SQL ; password_verify ; le tableau de tests.</span></td><td class="acces"><a href="seance-12/cours.html" data-doc="seance-12/cours.html">Cours</a><a href="seance-12/tp.html" data-doc="seance-12/tp.html">TP</a><a href="seance-12/tp-corrige.html" data-doc="seance-12/tp-corrige.html">Corrigé</a></td></tr>
+<tr data-doc="seance-13/cours.html"><td class="num">13</td><td class="theme"><a href="seance-13/cours.html" data-doc="seance-13/cours.html">Sessions et espace administrateur</a><span class="desc">Les sessions ; la redirection ; protéger une page ; la déconnexion ; les rôles ; supprimer et ajouter un compte ; password_hash ; la recette.</span></td><td class="acces"><a href="seance-13/cours.html" data-doc="seance-13/cours.html">Cours</a><a href="seance-13/tp.html" data-doc="seance-13/tp.html">TP</a><a href="seance-13/tp-corrige.html" data-doc="seance-13/tp-corrige.html">Corrigé</a></td></tr>
+<tr class="module"><td colspan="3">En décembre</td></tr>
+<tr class="a-venir"><td class="num">14</td><td class="theme">Finalisation et préparation de l'oral<span class="desc">Finitions de ton site, recette complète, préparation de la présentation.</span></td><td class="acces"><span class="etat">À venir</span></td></tr>
+<tr class="a-venir"><td class="num">15</td><td class="theme">Présentation orale<span class="desc">Tu présentes ton site et tu expliques ton code.</span></td><td class="acces"><span class="etat">À venir</span></td></tr>
+</tbody>
+</table></div>
+
+<h2 id="le-fil-rouge-techsolutions">Le fil rouge : TechSolutions</h2>
+<p>TechSolutions est une entreprise de services informatiques de Brive-la-Gaillarde, d'une trentaine de salariés. Tu as construit son site vitrine à la séance 8. Martin Durand, son responsable informatique, demande maintenant un <strong>espace réservé aux salariés</strong> : chaque salarié se connecte avec son identifiant et son mot de passe, et l'administrateur gère les comptes. À la fin du TP 13, ton site ressemble à ceci :</p>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" width="100%" style="max-width:900px" role="img" aria-label="Le site TechSolutions à la fin du TP 13" font-family="Arial, 'Liberation Sans', 'DejaVu Sans', sans-serif"><defs><marker id="pointe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5563"/></marker></defs><text x="20" y="24" text-anchor="start" font-size="13.5" fill="#1f3a5f" font-weight="bold">Pages publiques</text><rect x="20" y="36" width="160" height="58" rx="3" fill="#e8eef6" stroke="#1f3a5f" stroke-width="1.2"/><text x="100.0" y="60.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f3a5f">Accueil</text><text x="100.0" y="78.5" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">index.php</text><rect x="195" y="36" width="160" height="58" rx="3" fill="#e8eef6" stroke="#1f3a5f" stroke-width="1.2"/><text x="275.0" y="60.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f3a5f">Nos services</text><text x="275.0" y="78.5" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">services.php</text><rect x="370" y="36" width="160" height="58" rx="3" fill="#e8eef6" stroke="#1f3a5f" stroke-width="1.2"/><text x="450.0" y="60.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f3a5f">L&#x27;entreprise</text><text x="450.0" y="78.5" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">entreprise.php</text><rect x="545" y="36" width="160" height="58" rx="3" fill="#e8eef6" stroke="#1f3a5f" stroke-width="1.2"/><text x="625.0" y="60.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f3a5f">Contact</text><text x="625.0" y="78.5" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">contact.php</text><rect x="720" y="36" width="160" height="58" rx="3" fill="#e8eef6" stroke="#1f3a5f" stroke-width="1.2"/><text x="800.0" y="60.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f3a5f">Espace salariés</text><text x="800.0" y="78.5" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">connexion.php</text><text x="20" y="140" text-anchor="start" font-size="13.5" fill="#2d6a3e" font-weight="bold">Connexion</text><rect x="720" y="152" width="160" height="58" rx="3" fill="#f5f6f8" stroke="#9aa5b4" stroke-width="1.2"/><text x="800.0" y="176.6" text-anchor="middle" font-size="13" font-weight="bold" fill="#4a5563">Vérification</text><text x="800.0" y="194.6" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">verifier.php</text><line x1="800" y1="94" x2="800" y2="150" stroke="#4a5563" stroke-width="1.4" marker-end="url(#pointe)"/><rect x="440" y="152" width="200" height="58" rx="3" fill="#eef6f0" stroke="#2d6a3e" stroke-width="1.2"/><text x="540.0" y="176.6" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d6a3e">Mon espace</text><text x="540.0" y="194.6" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">espace.php</text><line x1="718" y1="181" x2="642" y2="181" stroke="#4a5563" stroke-width="1.4" marker-end="url(#pointe)"/><text x="680.0" y="173.0" text-anchor="middle" font-size="12.5" fill="#4a5563">réussie</text><rect x="160" y="152" width="200" height="58" rx="3" fill="#f5f6f8" stroke="#9aa5b4" stroke-width="1.2"/><text x="260.0" y="176.6" text-anchor="middle" font-size="13" font-weight="bold" fill="#4a5563">Déconnexion</text><text x="260.0" y="194.6" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">deconnexion.php</text><line x1="438" y1="181" x2="362" y2="181" stroke="#4a5563" stroke-width="1.4" marker-end="url(#pointe)"/><text x="20" y="262" text-anchor="start" font-size="13.5" fill="#5b3f86" font-weight="bold">Réservé à l&#x27;administrateur</text><rect x="440" y="274" width="200" height="58" rx="3" fill="#f4f0fa" stroke="#5b3f86" stroke-width="1.2"/><text x="540.0" y="298.6" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b3f86">Gestion des utilisateurs</text><text x="540.0" y="316.6" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">utilisateurs.php</text><line x1="540" y1="210" x2="540" y2="272" stroke="#4a5563" stroke-width="1.4" marker-end="url(#pointe)"/><text x="576.0" y="245.0" text-anchor="middle" font-size="12.5" fill="#4a5563">si admin</text><rect x="160" y="274" width="200" height="58" rx="3" fill="#f4f0fa" stroke="#5b3f86" stroke-width="1.2"/><text x="260.0" y="298.6" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b3f86">Supprimer un compte</text><text x="260.0" y="316.6" text-anchor="middle" font-size="13" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">supprimer.php</text><line x1="438" y1="303" x2="362" y2="303" stroke="#4a5563" stroke-width="1.4" marker-end="url(#pointe)"/><text x="400.0" y="295.0" text-anchor="middle" font-size="12.5" fill="#4a5563">bouton</text><rect x="720" y="274" width="160" height="58" rx="3" fill="#f4f0fa" stroke="#5b3f86" stroke-width="1.2"/><text x="800.0" y="289.9" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#5b3f86">Ajouter un compte</text><text x="800.0" y="307.4" text-anchor="middle" font-size="12.5" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">ajouter.php</text><text x="800.0" y="324.9" text-anchor="middle" font-size="12.5" fill="#1d2530" font-family="Consolas, 'DejaVu Sans Mono', monospace">creer.php</text><line x1="642" y1="303" x2="718" y2="303" stroke="#4a5563" stroke-width="1.4" marker-end="url(#pointe)"/><text x="680.0" y="295.0" text-anchor="middle" font-size="12.5" fill="#4a5563">lien</text><rect x="160" y="368" width="720" height="44" rx="3" fill="#eef6f0" stroke="#2d6a3e" stroke-width="1.2"/><text x="520.0" y="385.6" text-anchor="middle" font-size="12.5" fill="#1d2530">Base de données techsolutions, table utilisateurs : lue et modifiée par verifier.php,</text><text x="520.0" y="403.1" text-anchor="middle" font-size="12.5" fill="#1d2530">utilisateurs.php, supprimer.php et creer.php</text><text x="450" y="440" text-anchor="middle" font-size="13" fill="#4a5563" font-style="italic">En décembre : finitions et présentation orale de ton site.</text></svg><div class="caption">Le site TechSolutions à la fin du TP 13.</div></div>
+
+<h2 id="les-fiches-memo">Les fiches mémo</h2>
+<ul>
+<li><a href="memos/memo-html.html" data-doc="memos/memo-html.html">Mémo HTML</a> et <a href="memos/memo-css.html" data-doc="memos/memo-css.html">Mémo CSS</a> : les balises et les propriétés vues depuis la rentrée.</li>
+<li><a href="memos/memo-git.html" data-doc="memos/memo-git.html">Mémo Git et GitHub</a> : clone, add, commit, push.</li>
+<li><a href="memos/memo-php-sql.html" data-doc="memos/memo-php-sql.html">Aide-mémoire PHP et SQL</a> : complété après chaque cours, autorisé en TP et à l'oral.</li>
+</ul>
+
+</article>
+
+<footer class="course-footer"><p>BTS SIO, Bloc 1 : Support et mise à disposition de services informatiques</p></footer>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

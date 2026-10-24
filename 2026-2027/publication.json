@@ -1,56 +1,278 @@
 {
-  "titre": "Supports de cours",
-  "rubriques": [
+ "titre": "Supports de cours",
+ "rubriques": [
+  {
+   "titre": "Accueil et ressources du site",
+   "fixe": true,
+   "cache": true,
+   "documents": [
     {
-      "titre": "Fiches mémo",
-      "fixe": true,
-      "documents": [
-        {
-          "libelle": "Mémo HTML",
-          "fichier": "memos/memo-html.html",
-          "ouverture": "2026-10-06T06:00"
-        },
-        {
-          "libelle": "Mémo CSS",
-          "fichier": "memos/memo-css.html",
-          "source": "memos/memo-css-v1.html",
-          "ouverture": "2026-09-27T00:00"
-        },
-        {
-          "libelle": "Mémo CSS",
-          "fichier": "memos/memo-css.html",
-          "source": "memos/memo-css-v2.html",
-          "ouverture": "2026-10-05T06:00"
-        },
-        {
-          "libelle": "Mémo Git et GitHub",
-          "fichier": "memos/memo-git.html",
-          "clair": true,
-          "ouverture": "2026-10-06T00:00"
-        }
-      ]
+     "libelle": "Accueil et progression",
+     "fichier": "index.html",
+     "ouverture": "2026-10-24T00:00",
+     "clair": true
     },
     {
-      "titre": "Séance 8 : le site vitrine TechSolutions",
-      "documents": [
-        {
-          "libelle": "Cours : le site vitrine et le menu horizontal",
-          "fichier": "seance-08/cours.html",
-          "clair": true,
-          "ouverture": "2026-10-08T00:00"
-        },
-        {
-          "libelle": "TP : le squelette du site vitrine TechSolutions",
-          "fichier": "seance-08/tp-vitrine.html",
-          "clair": true,
-          "ouverture": "2026-10-08T00:00",
-          "annexes": [
-            "seance-08/img/vitrine-niveau1.png",
-            "seance-08/img/vitrine-index.png",
-            "seance-08/img/vitrine-services.png"
-          ]
-        }
-      ]
+     "libelle": "Feuille de style",
+     "fichier": "assets/style.css",
+     "ouverture": "2026-10-24T00:00",
+     "clair": true
+    },
+    {
+     "libelle": "Script des pages",
+     "fichier": "assets/app.js",
+     "ouverture": "2026-10-24T00:00",
+     "clair": true
+    },
+    {
+     "libelle": "Contrôle de la publication chiffrée",
+     "fichier": "assets/controle.txt",
+     "ouverture": "2026-10-24T00:00"
     }
-  ]
+   ]
+  },
+  {
+   "titre": "Fiches mémo",
+   "fixe": true,
+   "documents": [
+    {
+     "libelle": "Mémo HTML",
+     "fichier": "memos/memo-html.html",
+     "ouverture": "2026-10-06T06:00"
+    },
+    {
+     "libelle": "Mémo CSS",
+     "fichier": "memos/memo-css.html",
+     "source": "memos/memo-css-v1.html",
+     "ouverture": "2026-09-27T00:00"
+    },
+    {
+     "libelle": "Mémo CSS",
+     "fichier": "memos/memo-css.html",
+     "source": "memos/memo-css-v2.html",
+     "ouverture": "2026-10-05T06:00"
+    },
+    {
+     "libelle": "Mémo Git et GitHub",
+     "fichier": "memos/memo-git.html",
+     "clair": true,
+     "ouverture": "2026-10-06T00:00"
+    }
+   ]
+  },
+  {
+   "titre": "Séance 8 : le site vitrine TechSolutions",
+   "documents": [
+    {
+     "libelle": "Cours : le site vitrine et le menu horizontal",
+     "fichier": "seance-08/cours.html",
+     "clair": true,
+     "ouverture": "2026-10-08T00:00"
+    },
+    {
+     "libelle": "TP : le squelette du site vitrine TechSolutions",
+     "fichier": "seance-08/tp-vitrine.html",
+     "clair": true,
+     "ouverture": "2026-10-08T00:00",
+     "annexes": [
+      "seance-08/img/vitrine-niveau1.png",
+      "seance-08/img/vitrine-index.png",
+      "seance-08/img/vitrine-services.png"
+     ]
+    }
+   ]
+  },
+  {
+   "titre": "Aide-mémoire PHP et SQL",
+   "fixe": true,
+   "documents": [
+    {
+     "libelle": "Aide-mémoire PHP et SQL",
+     "fichier": "memos/memo-php-sql.html",
+     "ouverture": "2026-11-03T00:00",
+     "source": "memos/memo-php-sql-v1.html"
+    },
+    {
+     "libelle": "Aide-mémoire PHP et SQL",
+     "fichier": "memos/memo-php-sql.html",
+     "ouverture": "2026-11-10T00:00",
+     "source": "memos/memo-php-sql-v2.html"
+    },
+    {
+     "libelle": "Aide-mémoire PHP et SQL",
+     "fichier": "memos/memo-php-sql.html",
+     "ouverture": "2026-11-17T00:00",
+     "source": "memos/memo-php-sql-v3.html"
+    },
+    {
+     "libelle": "Aide-mémoire PHP et SQL",
+     "fichier": "memos/memo-php-sql.html",
+     "ouverture": "2026-11-24T00:00",
+     "source": "memos/memo-php-sql-v4.html"
+    },
+    {
+     "libelle": "Aide-mémoire PHP et SQL",
+     "fichier": "memos/memo-php-sql.html",
+     "ouverture": "2026-12-01T00:00",
+     "source": "memos/memo-php-sql-v5.html"
+    }
+   ]
+  },
+  {
+   "titre": "Mise en route : le serveur local",
+   "documents": [
+    {
+     "libelle": "Guide : installer le serveur local",
+     "fichier": "installer-serveur.html",
+     "ouverture": "2026-11-02T00:00"
+    },
+    {
+     "libelle": "TP : le serveur local et le dépôt techsolutions",
+     "fichier": "mise-en-route/tp.html",
+     "ouverture": "2026-11-02T00:00",
+     "annexes": [
+      "mise-en-route/img/mer-site-localhost.png"
+     ]
+    }
+   ]
+  },
+  {
+   "titre": "Séance 9 : Premiers pas en PHP",
+   "documents": [
+    {
+     "libelle": "Cours : Premiers pas en PHP",
+     "fichier": "seance-09/cours.html",
+     "ouverture": "2026-11-03T00:00"
+    },
+    {
+     "libelle": "TP 9 : Le site vitrine passe en PHP",
+     "fichier": "seance-09/tp.html",
+     "ouverture": "2026-11-09T00:00",
+     "annexes": [
+      "seance-09/img/s09-test-php.png",
+      "seance-09/img/s09-site-localhost.png",
+      "seance-09/img/s09-contact.png",
+      "seance-09/img/s09-services.png"
+     ]
+    },
+    {
+     "libelle": "Corrigé du TP 9",
+     "fichier": "seance-09/tp-corrige.html",
+     "ouverture": "2026-11-13T00:00"
+    }
+   ]
+  },
+  {
+   "titre": "Séance 10 : La base de données : MySQL et phpMyAdmin",
+   "documents": [
+    {
+     "libelle": "Cours : La base de données : MySQL et phpMyAdmin",
+     "fichier": "seance-10/cours.html",
+     "ouverture": "2026-11-10T00:00",
+     "annexes": [
+      "seance-10/img/s10-pma-nouvelle-base.png"
+     ]
+    },
+    {
+     "libelle": "TP 10 : La table des utilisateurs",
+     "fichier": "seance-10/tp.html",
+     "ouverture": "2026-11-16T00:00",
+     "annexes": [
+      "seance-10/img/s10-pma-nouvelle-base.png",
+      "seance-10/img/s10-pma-sql.png",
+      "seance-10/img/s10-pma-structure.png",
+      "seance-10/img/s10-pma-parcourir.png",
+      "seance-10/img/s10-pma-select.png",
+      "seance-10/img/s10-pma-exporter.png"
+     ]
+    },
+    {
+     "libelle": "Corrigé du TP 10",
+     "fichier": "seance-10/tp-corrige.html",
+     "ouverture": "2026-11-20T00:00",
+     "annexes": [
+      "seance-10/fichiers/techsolutions.sql"
+     ]
+    }
+   ]
+  },
+  {
+   "titre": "Séance 11 : PHP lit la base de données",
+   "documents": [
+    {
+     "libelle": "Cours : PHP lit la base de données",
+     "fichier": "seance-11/cours.html",
+     "ouverture": "2026-11-17T00:00",
+     "annexes": [
+      "seance-11/img/s11-essai.png"
+     ]
+    },
+    {
+     "libelle": "TP 11 : La page de gestion des utilisateurs",
+     "fichier": "seance-11/tp.html",
+     "ouverture": "2026-11-23T00:00",
+     "annexes": [
+      "seance-11/img/s11-utilisateurs.png",
+      "seance-11/img/s11-entreprise.png"
+     ]
+    },
+    {
+     "libelle": "Corrigé du TP 11",
+     "fichier": "seance-11/tp-corrige.html",
+     "ouverture": "2026-11-27T00:00"
+    }
+   ]
+  },
+  {
+   "titre": "Séance 12 : Le formulaire de connexion",
+   "documents": [
+    {
+     "libelle": "Cours : Le formulaire de connexion",
+     "fichier": "seance-12/cours.html",
+     "ouverture": "2026-11-24T00:00"
+    },
+    {
+     "libelle": "TP 12 : L'espace salariés, première version",
+     "fichier": "seance-12/tp.html",
+     "ouverture": "2026-11-30T00:00",
+     "annexes": [
+      "seance-12/img/s12-bienvenue.png",
+      "seance-12/img/s12-erreur.png",
+      "seance-12/img/s12-connexion.png"
+     ]
+    },
+    {
+     "libelle": "Corrigé du TP 12",
+     "fichier": "seance-12/tp-corrige.html",
+     "ouverture": "2026-12-04T00:00"
+    }
+   ]
+  },
+  {
+   "titre": "Séance 13 : Sessions et espace administrateur",
+   "documents": [
+    {
+     "libelle": "Cours : Sessions et espace administrateur",
+     "fichier": "seance-13/cours.html",
+     "ouverture": "2026-12-01T00:00"
+    },
+    {
+     "libelle": "TP 13 : Se connecter, se déconnecter, gérer les comptes",
+     "fichier": "seance-13/tp.html",
+     "ouverture": "2026-12-07T00:00",
+     "annexes": [
+      "seance-13/img/s13-espace-salarie.png",
+      "seance-13/img/s13-espace-admin.png",
+      "seance-13/img/s13-utilisateurs-admin.png",
+      "seance-13/img/s13-ajouter.png"
+     ]
+    },
+    {
+     "libelle": "Corrigé du TP 13",
+     "fichier": "seance-13/tp-corrige.html",
+     "ouverture": "2026-12-11T00:00"
+    }
+   ]
+  }
+ ]
 }
