@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mémo HTML | BTS SIO, Bloc 1</title>
+<meta name="description" content="Les balises et les règles vues en cours.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body class="kind-page">
+<header class="entete">
+  <button class="menu-btn" type="button">Menu</button>
+  <a class="formation" href="../index.html">BTS SIO 1<sup>re</sup> année</a>
+  <span class="sep"></span>
+  <a class="bloc" href="../index.html">Bloc 1 : Développement web</a>
+  <nav class="raccourcis">
+    <a href="../index.html">Progression</a>
+    <a href="../installer-serveur.html" data-doc="installer-serveur.html">Installer le serveur</a>
+    <a href="../memos/memo-php-sql.html" data-doc="memos/memo-php-sql.html">Aide-mémoire PHP et SQL</a>
+  </nav>
+</header>
+<aside class="sidebar">
+  <nav>
+<div class="nav-section-title">Le module</div>
+<div class="nav-item"><a class="nav-link" href="../index.html"><span>Accueil et progression</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../installer-serveur.html" data-doc="installer-serveur.html"><span>Installer le serveur local</span></a></div>
+<div class="nav-section-title">Avant les vacances</div>
+<div class="nav-item"><a class="nav-link" href="../seance-08/cours.html" data-doc="seance-08/cours.html"><span class="num">8.</span><span>Le site vitrine et le menu</span></a><a class="nav-tp" href="../seance-08/tp-vitrine.html" title="Travaux pratiques" data-doc="seance-08/tp-vitrine.html">TP</a></div>
+<div class="nav-section-title">Le site dynamique TechSolutions</div>
+<div class="nav-item"><a class="nav-link" href="../mise-en-route/tp.html" data-doc="mise-en-route/tp.html"><span>Mise en route : le serveur local</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-09/cours.html" data-doc="seance-09/cours.html"><span class="num">9.</span><span>Premiers pas en PHP</span></a><a class="nav-tp" href="../seance-09/tp.html" title="Travaux pratiques" data-doc="seance-09/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-10/cours.html" data-doc="seance-10/cours.html"><span class="num">10.</span><span>La base de données MySQL</span></a><a class="nav-tp" href="../seance-10/tp.html" title="Travaux pratiques" data-doc="seance-10/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-11/cours.html" data-doc="seance-11/cours.html"><span class="num">11.</span><span>PHP lit la base de données</span></a><a class="nav-tp" href="../seance-11/tp.html" title="Travaux pratiques" data-doc="seance-11/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-12/cours.html" data-doc="seance-12/cours.html"><span class="num">12.</span><span>Le formulaire de connexion</span></a><a class="nav-tp" href="../seance-12/tp.html" title="Travaux pratiques" data-doc="seance-12/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-13/cours.html" data-doc="seance-13/cours.html"><span class="num">13.</span><span>Sessions et administration</span></a><a class="nav-tp" href="../seance-13/tp.html" title="Travaux pratiques" data-doc="seance-13/tp.html">TP</a></div>
+<div class="nav-section-title">Fiches mémo</div>
+<div class="nav-item active"><a class="nav-link" href="../memos/memo-html.html" data-doc="memos/memo-html.html"><span>Mémo HTML</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../memos/memo-css.html" data-doc="memos/memo-css.html"><span>Mémo CSS</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../memos/memo-git.html" data-doc="memos/memo-git.html"><span>Mémo Git et GitHub</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../memos/memo-php-sql.html" data-doc="memos/memo-php-sql.html"><span>Aide-mémoire PHP et SQL</span></a></div>
+  </nav>
+</aside>
+<main class="main">
+<div class="fil"><a href="../index.html">Accueil</a><span class="sep">›</span><span>Fiches mémo</span><span class="sep">›</span><span>Mémo HTML</span></div>
+<header class="hero">
+  <span class="surtitre">Fiche mémo, autorisée en TP</span>
+  <h1>Mémo HTML</h1>
+  <p class="lead">Les balises et les règles vues en cours.</p>
+  
+</header>
+<nav class="page-toc"><div class="toc-title">Sommaire</div><ul><li><a href="#1-le-vocabulaire-d-une-balise">1. Le vocabulaire d'une balise</a></li><li><a href="#2-le-squelette-d-une-page">2. Le squelette d'une page</a></li><li><a href="#3-le-texte">3. Le texte</a></li><li><a href="#4-la-liste-numerotee">4. La liste numérotée</a></li><li><a href="#5-ranger-son-site">5. Ranger son site</a></li><li><a href="#6-les-chemins-relatifs">6. Les chemins relatifs</a></li><li><a href="#7-l-image">7. L'image</a></li><li><a href="#8-le-lien">8. Le lien</a></li><li><a href="#9-le-tableau">9. Le tableau</a></li><li><a href="#10-la-liste-a-puces-et-le-menu">10. La liste à puces et le menu</a></li></ul></nav>
+<article class="content">
+<h2 id="1-le-vocabulaire-d-une-balise">1. Le vocabulaire d'une balise</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">a</span> <span class="at">href</span>=<span class="st">"galerie.html"</span>&gt;Ma galerie&lt;/<span class="kw">a</span>&gt;</code></pre></div>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>&lt;a href="galerie.html"&gt;</code></td><td>la <strong>balise ouvrante</strong></td></tr>
+<tr><td class="cle"><code>a</code></td><td>le <strong>nom</strong> de la balise</td></tr>
+<tr><td class="cle"><code>href</code></td><td>un <strong>attribut</strong> : une option de la balise</td></tr>
+<tr><td class="cle"><code>"galerie.html"</code></td><td>la <strong>valeur</strong> de l'attribut, entre guillemets</td></tr>
+<tr><td class="cle"><code>Ma galerie</code></td><td>le <strong>contenu</strong> : ce qui s'affiche</td></tr>
+<tr><td class="cle"><code>&lt;/a&gt;</code></td><td>la <strong>balise fermante</strong>, avec une barre <code>/</code></td></tr>
+</table></div>
+<p>Un attribut s'écrit toujours dans la balise <strong>ouvrante</strong> : <code>nom="valeur"</code>. Deux attributs sont séparés par un espace.</p>
+<p>Une <strong>balise orpheline</strong> n'a ni balise fermante ni contenu : <code>&lt;meta&gt;</code>, <code>&lt;img&gt;</code>.</p>
+<h2 id="2-le-squelette-d-une-page">2. Le squelette d'une page</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code><span class="pp">&lt;!DOCTYPE html&gt;</span>              <span class="co">← 1re ligne</span>
+&lt;<span class="kw">html</span> <span class="at">lang</span>=<span class="st">"fr"</span>&gt;             <span class="co">← la langue</span>
+  &lt;<span class="kw">head</span>&gt;                     <span class="co">← invisible</span>
+    &lt;<span class="kw">meta</span> <span class="at">charset</span>=<span class="st">"utf-8"</span>&gt;   <span class="co">← les accents</span>
+    &lt;<span class="kw">title</span>&gt;Accueil&lt;/<span class="kw">title</span>&gt;   <span class="co">← l'onglet</span>
+  &lt;/<span class="kw">head</span>&gt;
+  &lt;<span class="kw">body</span>&gt;                     <span class="co">← visible</span>
+    &lt;<span class="kw">h1</span>&gt;Bienvenue&lt;/<span class="kw">h1</span>&gt;
+    &lt;<span class="kw">p</span>&gt;Ma première page.&lt;/<span class="kw">p</span>&gt;
+  &lt;/<span class="kw">body</span>&gt;
+&lt;/<span class="kw">html</span>&gt;</code></pre></div>
+<p><code>html</code> est la racine : elle contient toute la page. <code>head</code> donne des informations <strong>sur</strong> la page ; <code>body</code> contient tout ce qui s'affiche à l'écran.</p>
+<h2 id="3-le-texte">3. Le texte</h2>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>&lt;h1&gt;</code> à <code>&lt;h6&gt;</code></td><td>les titres, du plus important (<code>h1</code>) au moins important (<code>h6</code>)</td></tr>
+<tr><td class="cle"><code>&lt;p&gt;</code></td><td>un paragraphe</td></tr>
+<tr><td class="cle"><code>&lt;strong&gt;</code></td><td>un mot important (affiché en gras)</td></tr>
+</table></div>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">h2</span>&gt;Mes compétences&lt;/<span class="kw">h2</span>&gt;
+&lt;<span class="kw">p</span>&gt;Je suis &lt;<span class="kw">strong</span>&gt;motivé&lt;/<span class="kw">strong</span>&gt;.&lt;/<span class="kw">p</span>&gt;</code></pre></div>
+<ul>
+<li><strong>Un seul <code>h1</code> par page</strong> : c'est le titre de la page.</li>
+<li>On choisit un titre pour sa place dans le plan de la page, jamais pour sa taille.</li>
+</ul>
+<h2 id="4-la-liste-numerotee">4. La liste numérotée</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">ol</span>&gt;
+  &lt;<span class="kw">li</span>&gt;Ouvrir VS Code&lt;/<span class="kw">li</span>&gt;
+  &lt;<span class="kw">li</span>&gt;Créer le fichier index.html&lt;/<span class="kw">li</span>&gt;
+  &lt;<span class="kw">li</span>&gt;Enregistrer avec Ctrl+S&lt;/<span class="kw">li</span>&gt;
+&lt;/<span class="kw">ol</span>&gt;</code></pre></div>
+<p><code>ol</code> (<em>ordered list</em>) : la liste, numérotée toute seule. <code>li</code> (<em>list item</em>) : un élément.</p>
+<ul>
+<li>Un <code>li</code> par élément ; jamais de texte directement dans le <code>ol</code>.</li>
+<li>On choisit <code>ol</code> quand l'ordre a un sens : des étapes, un classement.</li>
+</ul>
+<h2 id="5-ranger-son-site">5. Ranger son site</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">Arborescence</span></div><pre><code>portfolio/
+├── index.html   <span class="co">la page d'accueil</span>
+├── galerie.html
+└── images/
+    └── photo-profil.jpg</code></pre></div>
+<ul>
+<li>La page d'accueil s'appelle <strong>toujours</strong> <code>index.html</code>.</li>
+<li>Noms de fichiers et de dossiers : en <strong>minuscules</strong>, sans accent ni espace, mots séparés par des tirets. <code>Ma Photo été.JPG</code> devient <code>ma-photo-ete.jpg</code>.</li>
+<li>Un nom qui décrit le contenu : <code>photo-profil.jpg</code>, pas <code>IMG_2031.jpg</code>.</li>
+</ul>
+<h2 id="6-les-chemins-relatifs">6. Les chemins relatifs</h2>
+<p>Un chemin relatif part du fichier <strong>dans lequel on écrit</strong> le lien ou l'image.</p>
+<div class="table-wrap"><table>
+<tr><th>Le fichier visé est...</th><th>J'écris</th></tr>
+<tr><td>dans le même dossier</td><td><code>galerie.html</code></td></tr>
+<tr><td>dans un sous-dossier</td><td><code>images/photo-profil.jpg</code></td></tr>
+</table></div>
+<p><code>images/</code> : j'entre dans le dossier <code>images</code>, puis je prends le fichier.</p>
+<p>Jamais de chemin qui part du disque (<code>C:\Users\...</code>) : il ne fonctionne que sur ton ordinateur.</p>
+<h2 id="7-l-image">7. L'image</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">img</span> <span class="at">src</span>=<span class="st">"images/photo-profil.jpg"</span> <span class="at">width</span>=<span class="st">"200"</span>&gt;</code></pre></div>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>src</code></td><td><em>source</em> : le chemin du fichier image (<strong>obligatoire</strong>)</td></tr>
+<tr><td class="cle"><code>width</code></td><td>la largeur, en pixels (facultatif)</td></tr>
+</table></div>
+<p><code>img</code> est une balise orpheline : elle n'a pas de balise fermante.</p>
+<p>Une image cliquable : l'image est le contenu du lien.</p>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">a</span> <span class="at">href</span>=<span class="st">"galerie.html"</span>&gt;
+  &lt;<span class="kw">img</span> <span class="at">src</span>=<span class="st">"images/vignette.jpg"</span> <span class="at">width</span>=<span class="st">"150"</span>&gt;
+&lt;/<span class="kw">a</span>&gt;</code></pre></div>
+<h2 id="8-le-lien">8. Le lien</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">a</span> <span class="at">href</span>=<span class="st">"cv.html"</span>&gt;Mon CV&lt;/<span class="kw">a</span>&gt;</code></pre></div>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>&lt;a&gt;</code></td><td>la balise du lien (<em>anchor</em>)</td></tr>
+<tr><td class="cle"><code>href</code></td><td>la <strong>destination</strong> du lien (<strong>obligatoire</strong>)</td></tr>
+<tr><td class="cle"><code>Mon CV</code></td><td>le texte cliquable</td></tr>
+</table></div>
+<p>Vers une de mes pages, <code>href</code> contient un chemin relatif (bloc 6). Vers un autre site, l'adresse est complète et commence par <code>https://</code> :</p>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">a</span> <span class="at">href</span>=<span class="st">"https://www.google.fr"</span>&gt;Google&lt;/<span class="kw">a</span>&gt;</code></pre></div>
+<ul>
+<li><code>target="_blank"</code> ouvre le lien dans un nouvel onglet : seulement pour les liens vers un autre site.</li>
+<li>Le texte du lien dit où l'on va : « mon CV détaillé », jamais « clique ici ».</li>
+</ul>
+<h2 id="9-le-tableau">9. Le tableau</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">table</span> <span class="at">width</span>=<span class="st">"100%"</span>&gt;
+  &lt;<span class="kw">tr</span>&gt;
+    &lt;<span class="kw">th</span> <span class="at">width</span>=<span class="st">"30%"</span>&gt;Salle&lt;/<span class="kw">th</span>&gt;
+    &lt;<span class="kw">th</span>&gt;Postes&lt;/<span class="kw">th</span>&gt;
+  &lt;/<span class="kw">tr</span>&gt;
+  &lt;<span class="kw">tr</span>&gt;
+    &lt;<span class="kw">td</span>&gt;B12&lt;/<span class="kw">td</span>&gt;
+    &lt;<span class="kw">td</span>&gt;16&lt;/<span class="kw">td</span>&gt;
+  &lt;/<span class="kw">tr</span>&gt;
+&lt;/<span class="kw">table</span>&gt;</code></pre></div>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>&lt;table&gt;</code></td><td>le tableau entier</td></tr>
+<tr><td class="cle"><code>&lt;tr&gt;</code></td><td><em>table row</em> : une ligne</td></tr>
+<tr><td class="cle"><code>&lt;th&gt;</code></td><td><em>table header</em> : une cellule de titre (en gras et centrée)</td></tr>
+<tr><td class="cle"><code>&lt;td&gt;</code></td><td><em>table data</em> : une cellule</td></tr>
+</table></div>
+<ul>
+<li>Le tableau se construit <strong>ligne par ligne</strong> : chaque <code>tr</code> contient ses <code>th</code> ou ses <code>td</code>.</li>
+<li>Chaque ligne a le même nombre de cellules.</li>
+<li>La ligne des titres s'écrit avec des <code>th</code>.</li>
+</ul>
+<p><strong>La largeur</strong> se règle avec l'attribut <code>width</code> :</p>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>&lt;table width="100%"&gt;</code></td><td>le tableau prend toute la largeur de la page</td></tr>
+<tr><td class="cle"><code>&lt;table width="600"&gt;</code></td><td>le tableau mesure 600 pixels</td></tr>
+<tr><td class="cle"><code>&lt;th width="30%"&gt;</code></td><td>la colonne occupe 30 % du tableau</td></tr>
+<tr><td class="cle"><code>&lt;td width="150"&gt;</code></td><td>la colonne mesure 150 pixels</td></tr>
+</table></div>
+<ul>
+<li>En pixels, on écrit le nombre seul (<code>600</code>) ; en pourcentage, avec <code>%</code>.</li>
+<li>Pour régler une colonne, il suffit de donner la largeur à sa première cellule.</li>
+</ul>
+<h2 id="10-la-liste-a-puces-et-le-menu">10. La liste à puces et le menu</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">ul</span>&gt;
+  &lt;<span class="kw">li</span>&gt;Une équipe locale&lt;/<span class="kw">li</span>&gt;
+  &lt;<span class="kw">li</span>&gt;Une réponse rapide&lt;/<span class="kw">li</span>&gt;
+&lt;/<span class="kw">ul</span>&gt;</code></pre></div>
+<p><code>ul</code> (<em>unordered list</em>) : une liste à puces, quand l'ordre n'a pas de sens. Les éléments s'écrivent avec les mêmes <code>li</code> que dans <code>ol</code>.</p>
+<p>Un menu est une liste de liens, rangée dans la balise <code>nav</code> (<em>navigation</em>) :</p>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">nav</span>&gt;
+  &lt;<span class="kw">ul</span> <span class="at">class</span>=<span class="st">"menu"</span>&gt;
+    &lt;<span class="kw">li</span>&gt;&lt;<span class="kw">a</span> <span class="at">class</span>=<span class="st">"lien-menu"</span> <span class="at">href</span>=<span class="st">"index.html"</span>&gt;Accueil&lt;/<span class="kw">a</span>&gt;&lt;/<span class="kw">li</span>&gt;
+    &lt;<span class="kw">li</span>&gt;&lt;<span class="kw">a</span> <span class="at">class</span>=<span class="st">"lien-menu"</span> <span class="at">href</span>=<span class="st">"services.html"</span>&gt;Nos services&lt;/<span class="kw">a</span>&gt;&lt;/<span class="kw">li</span>&gt;
+  &lt;/<span class="kw">ul</span>&gt;
+&lt;/<span class="kw">nav</span>&gt;</code></pre></div>
+<ul>
+<li>Le menu se place au tout début du <code>body</code>, avant le titre <code>h1</code>.</li>
+<li>Il est identique sur toutes les pages du site.</li>
+</ul>
+
+</article>
+
+<footer class="course-footer"><p>BTS SIO, Bloc 1 : Support et mise à disposition de services informatiques</p></footer>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

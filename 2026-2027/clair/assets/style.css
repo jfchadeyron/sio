@@ -527,3 +527,26 @@ kbd {
 
 /* liens verrouillés dans la colonne des supports */
 table.progression td.acces .verrou-lien { margin-right: 10px; }
+
+/* petits textes */
+.content p.petit { font-size: 0.88rem; color: var(--texte-doux); }
+
+/* première colonne des tableaux des fiches mémo */
+.content td.cle { width: 1%; white-space: nowrap; }
+.content td.cle code { white-space: nowrap; }
+
+/* rendu d'un menu dans les aperçus */
+.apercu.demo ul { margin: 0 0 0 22px; }
+.apercu.demo a { color: #0000ee; }
+.apercu.demo .demo-nav { background-color: #123c63; padding: 12px 20px; }
+.apercu.demo .demo-menu { display: flex; list-style: none; gap: 30px; padding: 0; margin: 0; flex-wrap: wrap; }
+.apercu.demo .demo-menu li { margin: 0; }
+.apercu.demo .demo-lien { color: #ffffff; font-weight: bold; text-decoration: none; }
+.apercu .demo-nav { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* pastilles de couleur */
+.pastille { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--trait-fort); vertical-align: -2px; margin-right: 6px; }
+
+@media (max-width: 980px) {
+  .content td.cle, .content td.cle code { white-space: normal; }
+}

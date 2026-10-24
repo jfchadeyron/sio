@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mémo CSS | BTS SIO, Bloc 1</title>
+<meta name="description" content="Les propriétés et les sélecteurs vus en cours.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body class="kind-page">
+<header class="entete">
+  <button class="menu-btn" type="button">Menu</button>
+  <a class="formation" href="../index.html">BTS SIO 1<sup>re</sup> année</a>
+  <span class="sep"></span>
+  <a class="bloc" href="../index.html">Bloc 1 : Développement web</a>
+  <nav class="raccourcis">
+    <a href="../index.html">Progression</a>
+    <a href="../installer-serveur.html" data-doc="installer-serveur.html">Installer le serveur</a>
+    <a href="../memos/memo-php-sql.html" data-doc="memos/memo-php-sql.html">Aide-mémoire PHP et SQL</a>
+  </nav>
+</header>
+<aside class="sidebar">
+  <nav>
+<div class="nav-section-title">Le module</div>
+<div class="nav-item"><a class="nav-link" href="../index.html"><span>Accueil et progression</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../installer-serveur.html" data-doc="installer-serveur.html"><span>Installer le serveur local</span></a></div>
+<div class="nav-section-title">Avant les vacances</div>
+<div class="nav-item"><a class="nav-link" href="../seance-08/cours.html" data-doc="seance-08/cours.html"><span class="num">8.</span><span>Le site vitrine et le menu</span></a><a class="nav-tp" href="../seance-08/tp-vitrine.html" title="Travaux pratiques" data-doc="seance-08/tp-vitrine.html">TP</a></div>
+<div class="nav-section-title">Le site dynamique TechSolutions</div>
+<div class="nav-item"><a class="nav-link" href="../mise-en-route/tp.html" data-doc="mise-en-route/tp.html"><span>Mise en route : le serveur local</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-09/cours.html" data-doc="seance-09/cours.html"><span class="num">9.</span><span>Premiers pas en PHP</span></a><a class="nav-tp" href="../seance-09/tp.html" title="Travaux pratiques" data-doc="seance-09/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-10/cours.html" data-doc="seance-10/cours.html"><span class="num">10.</span><span>La base de données MySQL</span></a><a class="nav-tp" href="../seance-10/tp.html" title="Travaux pratiques" data-doc="seance-10/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-11/cours.html" data-doc="seance-11/cours.html"><span class="num">11.</span><span>PHP lit la base de données</span></a><a class="nav-tp" href="../seance-11/tp.html" title="Travaux pratiques" data-doc="seance-11/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-12/cours.html" data-doc="seance-12/cours.html"><span class="num">12.</span><span>Le formulaire de connexion</span></a><a class="nav-tp" href="../seance-12/tp.html" title="Travaux pratiques" data-doc="seance-12/tp.html">TP</a></div>
+<div class="nav-item"><a class="nav-link" href="../seance-13/cours.html" data-doc="seance-13/cours.html"><span class="num">13.</span><span>Sessions et administration</span></a><a class="nav-tp" href="../seance-13/tp.html" title="Travaux pratiques" data-doc="seance-13/tp.html">TP</a></div>
+<div class="nav-section-title">Fiches mémo</div>
+<div class="nav-item"><a class="nav-link" href="../memos/memo-html.html" data-doc="memos/memo-html.html"><span>Mémo HTML</span></a></div>
+<div class="nav-item active"><a class="nav-link" href="../memos/memo-css.html" data-doc="memos/memo-css.html"><span>Mémo CSS</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../memos/memo-git.html" data-doc="memos/memo-git.html"><span>Mémo Git et GitHub</span></a></div>
+<div class="nav-item"><a class="nav-link" href="../memos/memo-php-sql.html" data-doc="memos/memo-php-sql.html"><span>Aide-mémoire PHP et SQL</span></a></div>
+  </nav>
+</aside>
+<main class="main">
+<div class="fil"><a href="../index.html">Accueil</a><span class="sep">›</span><span>Fiches mémo</span><span class="sep">›</span><span>Mémo CSS</span></div>
+<header class="hero">
+  <span class="surtitre">Fiche mémo, autorisée en TP</span>
+  <h1>Mémo CSS</h1>
+  <p class="lead">Les propriétés et les sélecteurs vus en cours.</p>
+  
+</header>
+<nav class="page-toc"><div class="toc-title">Sommaire</div><ul><li><a href="#1-ecrire-une-regle">1. Écrire une règle</a></li><li><a href="#2-relier-le-css-a-une-page">2. Relier le CSS à une page</a></li><li><a href="#3-les-selecteurs">3. Les sélecteurs</a></li><li><a href="#4-classes-et-identifiant">4. Classes et identifiant</a></li><li><a href="#5-quelle-regle-gagne">5. Quelle règle gagne ?</a></li><li><a href="#6-les-couleurs">6. Les couleurs</a></li><li><a href="#7-le-texte">7. Le texte</a></li><li><a href="#8-la-boite">8. La boîte</a></li><li><a href="#9-le-menu-horizontal">9. Le menu horizontal</a></li><li><a href="#ca-ne-marche-pas">Ça ne marche pas ?</a></li><li><a href="#pas-encore-vu-ne-pas-utiliser">Pas encore vu : ne pas utiliser</a></li></ul></nav>
+<article class="content">
+<p class="petit">Ce mémo ne contient que ce qui a été vu en cours. Il est autorisé pendant les TP.</p>
+<h2 id="1-ecrire-une-regle">1. Écrire une règle</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">CSS</span></div><pre><code><span class="kw">h1</span> {
+  <span class="kw">color</span>: <span class="dv">#1f4e79</span>;
+  <span class="kw">font-size</span>: <span class="dv">40</span><span class="kw">px</span>;
+}</code></pre></div>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>h1</code></td><td>le <strong>sélecteur</strong> : ce que l'on vise</td></tr>
+<tr><td class="cle"><code>color</code></td><td>la <strong>propriété</strong> : ce que l'on change</td></tr>
+<tr><td class="cle"><code>#1f4e79</code></td><td>la <strong>valeur</strong> : ce que l'on veut</td></tr>
+<tr><td class="cle"><code>{ }</code></td><td>ouvrent et ferment la règle</td></tr>
+<tr><td><code>:</code> et <code>;</code></td><td>deux-points après la propriété, point-virgule à la fin de <strong>chaque</strong> ligne</td></tr>
+<tr><td class="cle"><code>/* ... */</code></td><td>un commentaire CSS (jamais <code>&lt;!-- --&gt;</code>)</td></tr>
+</table></div>
+<h2 id="2-relier-le-css-a-une-page">2. Relier le CSS à une page</h2>
+<p>Dans le <code>&lt;head&gt;</code> de <strong>chaque</strong> page :</p>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">link</span> <span class="at">rel</span>=<span class="st">"stylesheet"</span> <span class="at">href</span>=<span class="st">"css/style.css"</span>&gt;</code></pre></div>
+<p>Un seul fichier <code>css/style.css</code> pour tout le site. Noms de dossiers et de fichiers en minuscules.</p>
+<h2 id="3-les-selecteurs">3. Les sélecteurs</h2>
+<div class="table-wrap"><table>
+<tr><th>J'écris</th><th>Je vise</th></tr>
+<tr><td class="cle"><code>body</code></td><td>toute la page (le décor de base)</td></tr>
+<tr><td><code>h1</code>, <code>p</code>, <code>a</code>, <code>li</code>, <code>td</code>...</td><td><strong>tous</strong> les éléments de cette balise</td></tr>
+<tr><td class="cle"><code>h1, h2</code></td><td>les <code>h1</code> <strong>et</strong> les <code>h2</code> (la virgule regroupe)</td></tr>
+<tr><td class="cle"><code>.intro</code></td><td>les éléments qui ont <code>class="intro"</code></td></tr>
+<tr><td class="cle"><code>#contact</code></td><td>l'élément unique qui a <code>id="contact"</code></td></tr>
+</table></div>
+<h2 id="4-classes-et-identifiant">4. Classes et identifiant</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">HTML</span></div><pre><code>&lt;<span class="kw">p</span> <span class="at">class</span>=<span class="st">"intro"</span>&gt;...&lt;/<span class="kw">p</span>&gt;        .intro   { ... }
+&lt;<span class="kw">td</span> <span class="at">class</span>=<span class="st">"resolu"</span>&gt;...&lt;/<span class="kw">td</span>&gt;     .resolu  { ... }
+&lt;<span class="kw">p</span> <span class="at">id</span>=<span class="st">"contact"</span>&gt;...&lt;/<span class="kw">p</span>&gt;         #contact { ... }</code></pre></div>
+<ul>
+<li>Le point et le dièse s'écrivent <strong>seulement dans le CSS</strong>.</li>
+<li>Une classe se réutilise sur autant d'éléments que l'on veut ; un identifiant n'apparaît qu'<strong>une fois</strong> par page.</li>
+<li>Deux classes sur un élément : <code>class="resolu a-rappeler"</code> (séparées par un espace).</li>
+<li>Noms en minuscules, sans accent ni espace, avec des tirets. Le nom dit le <strong>rôle</strong>, pas la couleur.</li>
+</ul>
+<h2 id="5-quelle-regle-gagne">5. Quelle règle gagne ?</h2>
+<ol>
+<li>L'identifiant <code>#contact</code> gagne sur la classe <code>.intro</code>.</li>
+<li>La classe gagne sur la balise <code>p</code>.</li>
+<li>À précision égale, la dernière règle écrite gagne.</li>
+</ol>
+<p>Les propriétés qui ne se contredisent pas <strong>s'additionnent</strong>.</p>
+<p><strong>Héritage</strong> : ce qui est dans <code>body</code> passe à tout ce qu'il contient, sauf si l'élément a sa propre règle.</p>
+<p>Pas d'attribut <code>style</code> dans les balises : il gagne sur tout et rend le CSS incompréhensible.</p>
+<h2 id="6-les-couleurs">6. Les couleurs</h2>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>color</code></td><td>les lettres (l'<strong>encre</strong>)</td></tr>
+<tr><td class="cle"><code>background-color</code></td><td>le fond (le <strong>papier</strong>)</td></tr>
+</table></div>
+<p>Un code <code>#rrvvbb</code> : rouge, vert, bleu, de <code>00</code> à <code>ff</code>. Dans VS Code, le petit carré coloré ouvre la palette.</p>
+<div class="table-wrap"><table>
+<tr><td><span class="pastille" style="background:#000000"></span><code>#000000</code> noir</td><td><span class="pastille" style="background:#ffffff"></span><code>#ffffff</code> blanc</td></tr>
+<tr><td><span class="pastille" style="background:#333333"></span><code>#333333</code> gris foncé</td><td><span class="pastille" style="background:#f4f6f8"></span><code>#f4f6f8</code> gris très clair</td></tr>
+<tr><td><span class="pastille" style="background:#1f4e79"></span><code>#1f4e79</code> bleu marine</td><td><span class="pastille" style="background:#c62828"></span><code>#c62828</code> rouge brique</td></tr>
+</table></div>
+<p>Règle d'or : texte foncé sur fond clair, ou l'inverse. Jamais clair sur clair.</p>
+<h2 id="7-le-texte">7. Le texte</h2>
+<div class="table-wrap"><table>
+<tr><th>Propriété</th><th>Rôle</th><th>Exemple</th></tr>
+<tr><td class="cle"><code>font-family</code></td><td>la police</td><td><code>Verdana, sans-serif</code></td></tr>
+<tr><td class="cle"><code>font-size</code></td><td>la taille</td><td><code>17px</code> (collé)</td></tr>
+<tr><td class="cle"><code>font-weight</code></td><td>le gras</td><td><code>bold</code>, <code>normal</code></td></tr>
+<tr><td class="cle"><code>font-style</code></td><td>l'italique</td><td><code>italic</code>, <code>normal</code></td></tr>
+<tr><td class="cle"><code>text-align</code></td><td>l'alignement</td><td><code>left</code>, <code>center</code>, <code>right</code></td></tr>
+<tr><td class="cle"><code>line-height</code></td><td>l'interligne</td><td><code>1.6</code> (sans unité, avec un point)</td></tr>
+</table></div>
+<p>Police : toujours une famille de secours à la fin (<code>serif</code>, <code>sans-serif</code>, <code>monospace</code>), et des guillemets si le nom contient un espace : <code>"Courier New", monospace</code>.</p>
+<h2 id="8-la-boite">8. La boîte</h2>
+<p>Chaque élément est une boîte : contenu, puis <code>padding</code>, puis <code>border</code>, puis <code>margin</code>.</p>
+<div class="table-wrap"><table>
+<tr><th>Propriété</th><th>Rôle</th><th>Exemple</th></tr>
+<tr><td class="cle"><code>border</code></td><td>la bordure : épaisseur, style, couleur</td><td><code>2px solid #1f4e79</code></td></tr>
+<tr><td class="cle"><code>border-bottom</code></td><td>un seul côté (<code>-top</code>, <code>-left</code>, <code>-right</code>)</td><td><code>3px solid #e67e22</code></td></tr>
+<tr><td class="cle"><code>padding</code></td><td>l'espace <strong>intérieur</strong> (le fond s'étend dessous)</td><td><code>15px</code> ou <code>10px 20px</code></td></tr>
+<tr><td class="cle"><code>margin</code></td><td>l'espace <strong>extérieur</strong> (transparent)</td><td><code>20px</code> ou <code>0 auto</code></td></tr>
+<tr><td class="cle"><code>width</code></td><td>la largeur du contenu</td><td><code>300px</code>, <code>100%</code></td></tr>
+<tr><td class="cle"><code>max-width</code></td><td>la largeur maximale</td><td><code>800px</code></td></tr>
+</table></div>
+<p>Styles de bordure : <code>solid</code>, <code>dashed</code>, <code>dotted</code>, <code>double</code>. Sans style, pas de bordure.</p>
+<p>Deux valeurs : <code>padding: 10px 20px;</code> = 10 px en haut et en bas, 20 px à gauche et à droite.</p>
+<p>Centrer la page : <code>body { max-width: 800px; margin: 0 auto; }</code></p>
+<p>Largeur réelle = <code>width</code> + 2 × <code>padding</code> + 2 × <code>border</code>.</p>
+<p>Tableau à traits simples :</p>
+<div class="code-block"><div class="code-header"><span class="code-machine">CSS</span></div><pre><code><span class="kw">table</span> { <span class="kw">border-collapse</span>: <span class="kw">collapse</span>; }
+<span class="kw">td</span>    { <span class="kw">border</span>: <span class="dv">1</span><span class="kw">px</span> <span class="kw">solid</span> <span class="dv">#999999</span>;
+        <span class="kw">padding</span>: <span class="dv">8</span><span class="kw">px</span>; }</code></pre></div>
+<h2 id="9-le-menu-horizontal">9. Le menu horizontal</h2>
+<div class="code-block"><div class="code-header"><span class="code-machine">CSS</span></div><pre><code>.menu {
+  <span class="kw">display</span>: <span class="kw">flex</span>;
+  <span class="kw">list-style</span>: <span class="kw">none</span>;
+  <span class="kw">gap</span>: <span class="dv">30</span><span class="kw">px</span>;
+  <span class="kw">padding</span>: <span class="dv">0</span>;
+  <span class="kw">margin</span>: <span class="dv">0</span>;
+}
+.lien-menu {
+  <span class="kw">color</span>: <span class="dv">#ffffff</span>;
+  <span class="kw">text-decoration</span>: <span class="kw">none</span>;
+}</code></pre></div>
+<div class="table-wrap"><table>
+<tr><td class="cle"><code>display: flex;</code></td><td>range les éléments de la liste <strong>côte à côte</strong></td></tr>
+<tr><td class="cle"><code>list-style: none;</code></td><td>supprime les puces</td></tr>
+<tr><td class="cle"><code>gap: 30px;</code></td><td>l'espace <strong>entre</strong> les éléments</td></tr>
+<tr><td class="cle"><code>padding: 0;</code> et <code>margin: 0;</code></td><td>suppriment les espaces que le navigateur ajoute autour d'une liste</td></tr>
+<tr><td class="cle"><code>text-decoration: none;</code></td><td>supprime le soulignement d'un lien</td></tr>
+</table></div>
+<h2 id="ca-ne-marche-pas">Ça ne marche pas ?</h2><div class="callout warn"><div class="callout-body"><div class="table-wrap"><table>
+<tr><td>Rien ne change</td><td><code>&lt;link&gt;</code> absent ou chemin faux (F12, Console : 404).</td></tr>
+<tr><td>Une ligne ignorée</td><td><code>;</code> ou <code>:</code> oublié : regarde la ligne <strong>au-dessus</strong>.</td></tr>
+<tr><td>Classe sans effet</td><td>point oublié dans le CSS, point en trop dans le HTML, nom différent (majuscule, accent).</td></tr>
+<tr><td>Tout le bas est cassé</td><td>une <code>}</code> oubliée.</td></tr>
+<tr><td>Bordure invisible</td><td>le style manque : <code>solid</code>.</td></tr>
+<tr><td>Code juste, rien ne bouge</td><td><code>Ctrl+S</code>, puis <code>Ctrl+F5</code>.</td></tr>
+<tr><td>OK en local, pas en ligne</td><td>une majuscule dans un nom de fichier.</td></tr>
+</table></div>
+<p>« Le CSS ne crie jamais, il ignore. » L'inspecteur (clic droit, Inspecter) montre les règles appliquées et barre celles qui perdent.</p></div></div>
+<h2 id="pas-encore-vu-ne-pas-utiliser">Pas encore vu : ne pas utiliser</h2><div class="callout info"><div class="callout-body"><p><code>span</code>, <code>div</code> · <code>border-radius</code> · sélecteurs combinés (<code>td.urgente</code>, <code>.tableau td</code>, <code>nav a</code>) · <code>a:hover</code> · Google Fonts · les autres réglages de Flexbox (<code>justify-content</code>, <code>align-items</code>) · <code>:root</code> et les <code>--variables</code> · <code>!important</code> · <code>box-sizing</code></p></div></div>
+
+</article>
+
+<footer class="course-footer"><p>BTS SIO, Bloc 1 : Support et mise à disposition de services informatiques</p></footer>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>
