@@ -4,10 +4,13 @@ on:
   push:
     branches: [main]
   schedule:
-    # Plusieurs passages le matin et le soir : GitHub peut retarder ou sauter
+    # Les documents s'ouvrent à minuit (heure de Paris), le jour indiqué dans publication.json.
+    # Plusieurs passages dans la nuit, le matin et le soir : GitHub peut retarder ou sauter
     # une exécution programmée, et l'heure de Paris change deux fois par an.
-    - cron: "5 4,5,6 * * *"   # entre 5 h et 8 h, heure de Paris
-    - cron: "5 17,18 * * *"   # entre 18 h et 20 h, heure de Paris
+    - cron: "17 23 * * *"     # vers 0 h 15 (hiver) ou 1 h 15 (été), heure de Paris
+    - cron: "17 1 * * *"      # vers 2 h 15 ou 3 h 15
+    - cron: "5 4,5,6 * * *"   # entre 5 h et 8 h
+    - cron: "5 17,18 * * *"   # entre 18 h et 20 h
   workflow_dispatch:
 
 permissions:

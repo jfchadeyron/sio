@@ -1,19 +1,34 @@
 # -*- coding: utf-8 -*-
 """Prépare le site : ne déchiffre que les documents dont la date d'ouverture est passée.
 
-Un document marqué "clair": true dans publication.json n'est pas chiffré : il est
-copié tel quel depuis ANNEE/clair/<chemin>.
+Lancé par GitHub Actions plusieurs fois par jour (voir .github/workflows/publication.yml).
 
-Lancé par GitHub Actions chaque jour. La clé de déchiffrement est lue dans la
-variable d'environnement CLE_SITE (secret du dépôt). Aucune dépendance externe :
-Python 3 et openssl suffisent.
+Pour chaque document cité dans ANNEE/publication.json :
+- "clair": true          : copié tel quel depuis ANNEE/clair/<chemin> ;
+- ANNEE/coffre/<chemin>.enc2 : chiffré avec la clé publique du site (outils/cle-publique.pem),
+                           déchiffré ici avec la clé privée tirée du secret CLE_SITE ;
+- ANNEE/coffre/<chemin>.enc  : ancien format, chiffré directement avec CLE_SITE.
+
+Le secret CLE_SITE (Settings > Secrets and variables > Actions) ne sert qu'ici : la clé
+privée en est tirée à chaque passage et n'est jamais écrite dans le dépôt. La clé publique
+correspondante est publiée à la racine du site (cle-publique.pem) : elle permet de chiffrer
+de nouveaux documents sans connaître le secret (outils/chiffrer.py).
+
+Le fichier ANNEE/assets/publie.json liste les documents en ligne : les pages s'en servent
+pour griser les liens vers les documents pas encore ouverts.
+
+Pour vérifier une publication future : DATE_SIMULEE=2026-11-09T08:00 python3 outils/publier.py
+Aucune dépendance externe : Python 3 et openssl suffisent.
 """
+import base64
+import hashlib
 import html
 import json
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -23,12 +38,65 @@ SITE = RACINE / "_site"
 FUSEAU = ZoneInfo("Europe/Paris")
 ANNEES = ["2026-2027"]
 
+PKCS8_X25519 = bytes.fromhex("302e020100300506032b656e04220420")
+SPKI_X25519 = bytes.fromhex("302a300506032b656e032100")
+ENTETE2 = b"SIO2"
 
-def dechiffrer(source, cible, cle):
+
+def pem(etiquette, der):
+    corps = base64.encodebytes(der).decode("ascii")
+    return f"-----BEGIN {etiquette}-----\n{corps}-----END {etiquette}-----\n"
+
+
+class Cles:
+    """Clé privée X25519 tirée du secret CLE_SITE (fichier temporaire, supprimé à la fin)."""
+
+    def __init__(self, cle_site):
+        self.cle_site = cle_site
+        self.dossier = Path(tempfile.mkdtemp(prefix="cles-"))
+        graine = hashlib.sha256(b"sio-x25519|" + cle_site.encode("utf-8")).digest()
+        self.privee = self.dossier / "privee.pem"
+        self.privee.write_text(pem("PRIVATE KEY", PKCS8_X25519 + graine), encoding="ascii")
+        os.chmod(self.privee, 0o600)
+        res = subprocess.run(["openssl", "pkey", "-in", str(self.privee), "-pubout"],
+                             check=True, capture_output=True, text=True)
+        self.publique = res.stdout
+
+    def fermer(self):
+        shutil.rmtree(self.dossier, ignore_errors=True)
+
+
+def dechiffrer_ancien(source, cible, cles):
     cible.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(["openssl", "enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "200000",
                     "-md", "sha256", "-in", str(source), "-out", str(cible), "-pass", "env:CLE_SITE"],
-                   check=True, env={**os.environ, "CLE_SITE": cle})
+                   check=True, env={**os.environ, "CLE_SITE": cles.cle_site})
+
+
+def dechiffrer2(source, cible, cles):
+    donnees = source.read_bytes()
+    if not donnees.startswith(ENTETE2) or len(donnees) < 36:
+        raise RuntimeError(f"format inattendu : {source}")
+    ephemere = cles.dossier / "ephemere.pem"
+    ephemere.write_text(pem("PUBLIC KEY", SPKI_X25519 + donnees[4:36]), encoding="ascii")
+    partage = subprocess.run(["openssl", "pkeyutl", "-derive", "-inkey", str(cles.privee),
+                              "-peerkey", str(ephemere)], check=True, capture_output=True).stdout
+    mdp = hashlib.sha256(b"sio-paquet|" + partage).hexdigest()
+    chiffre = cles.dossier / "paquet.bin"
+    chiffre.write_bytes(donnees[36:])
+    cible.parent.mkdir(parents=True, exist_ok=True)
+    res = subprocess.run(["openssl", "enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "100000",
+                          "-md", "sha256", "-in", str(chiffre), "-out", str(cible), "-pass", "env:MDP"],
+                         env={**os.environ, "MDP": mdp}, capture_output=True)
+    if res.returncode != 0:
+        raise RuntimeError(f"déchiffrement impossible de {source} : la clé CLE_SITE a-t-elle changé ?")
+
+
+def sortir(coffre, chemin, cible, cles):
+    if (coffre / (chemin + ".enc2")).exists():
+        dechiffrer2(coffre / (chemin + ".enc2"), cible, cles)
+    else:
+        dechiffrer_ancien(coffre / (chemin + ".enc"), cible, cles)
 
 
 def copier(source, cible):
@@ -40,7 +108,7 @@ def ouvert(doc, maintenant):
     return datetime.fromisoformat(doc["ouverture"]).replace(tzinfo=FUSEAU) <= maintenant
 
 
-def publier_annee(annee, cle, maintenant):
+def publier_annee(annee, cles, maintenant):
     dossier = RACINE / annee
     manifeste = json.loads((dossier / "publication.json").read_text(encoding="utf-8"))
     coffre = dossier / "coffre"
@@ -63,13 +131,26 @@ def publier_annee(annee, cle, maintenant):
             for annexe in doc.get("annexes", []):
                 copier(dossier / "clair" / annexe, sortie / annexe)
             continue
-        dechiffrer(coffre / (source + ".enc"), sortie / fichier, cle)
+        sortir(coffre, source, sortie / fichier, cles)
         for annexe in doc.get("annexes", []):
-            dechiffrer(coffre / (annexe + ".enc"), sortie / annexe, cle)
+            sortir(coffre, annexe, sortie / annexe, cles)
 
-    # Page d'accueil de l'année : uniquement les documents ouverts.
+    # Liste des documents en ligne, lue par les pages (assets/app.js).
+    (sortie / "assets").mkdir(parents=True, exist_ok=True)
+    (sortie / "assets" / "publie.json").write_text(
+        json.dumps({"documents": sorted(retenus)}, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    # Page d'accueil : fournie par le manifeste (document index.html), sinon fabriquée ici.
+    if "index.html" not in retenus:
+        (sortie / "index.html").write_text(accueil_simple(manifeste, retenus), encoding="utf-8")
+    return len(retenus)
+
+
+def accueil_simple(manifeste, retenus):
     fixes, seances = [], []
     for rubrique in manifeste["rubriques"]:
+        if rubrique.get("cache"):
+            continue
         vus, liens = set(), []
         for doc in rubrique["documents"]:
             if doc["fichier"] in retenus and doc["fichier"] not in vus:
@@ -85,44 +166,24 @@ def publier_annee(annee, cle, maintenant):
         blocs.append(f'<h2>{html.escape(rubrique["titre"])}</h2>\n<ul>\n{items}\n</ul>')
     if not blocs:
         blocs.append("<p>Aucun document pour le moment.</p>")
-    (sortie).mkdir(parents=True, exist_ok=True)
-    (sortie / "index.html").write_text(
-        gabarit(manifeste["titre"], manifeste.get("presentation", ""), "\n".join(blocs)),
-        encoding="utf-8")
-    return len(retenus)
-
-
-def gabarit(titre, presentation, corps):
-    sous_titre = f'<p class="sous-titre">{html.escape(presentation)}</p>' if presentation else ""
+    titre = html.escape(manifeste["titre"])
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(titre)}</title>
+<title>{titre}</title>
 <style>
-body {{ margin: 0 auto; max-width: 760px; padding: 26px 22px 40px; background: #ffffff; color: #1b1b1b;
-  font-family: Cambria, Georgia, "Times New Roman", serif; font-size: 17px; line-height: 1.55; }}
-.entete {{ display: table; width: 100%; border-bottom: 1px solid #1b1b1b; padding-bottom: 5px;
-  font-family: Arial, Helvetica, sans-serif; font-size: 12.5px; color: #3a3a3a; }}
-.entete span {{ display: table-cell; }}
-.entete .droite {{ text-align: right; }}
-h1 {{ font-size: 29px; font-weight: normal; color: #13305a; margin: 26px 0 4px; }}
-.sous-titre {{ font-style: italic; color: #4a4a4a; margin: 0 0 18px; padding-bottom: 12px; border-bottom: 3px double #b8c2cc; }}
-h2 {{ font-size: 19px; color: #13305a; margin: 28px 0 8px; padding-bottom: 3px; border-bottom: 1px solid #b8c2cc; }}
-ul {{ margin: 6px 0 10px; padding-left: 24px; }}
-li {{ margin: 5px 0; }}
-a {{ color: #13305a; }}
-.pied {{ margin-top: 44px; padding-top: 6px; border-top: 1px solid #b8c2cc; font-family: Arial, Helvetica, sans-serif;
-  font-size: 12px; color: #6a6a6a; text-align: center; }}
+body {{ margin: 0 auto; max-width: 760px; padding: 26px 22px 40px; background: #fff; color: #1d2530;
+  font-family: "Segoe UI", Arial, sans-serif; font-size: 16px; line-height: 1.55; }}
+h1 {{ color: #1f3a5f; border-bottom: 2px solid #1f3a5f; padding-bottom: 8px; }}
+h2 {{ color: #1f3a5f; font-size: 19px; border-bottom: 1px solid #d3d9e0; padding-bottom: 3px; }}
+a {{ color: #1a4f8b; }}
 </style>
 </head>
 <body>
-<div class="entete"><span>BTS SIO 1<sup>re</sup> année · Bloc 1</span><span class="droite">Développement web</span></div>
-<h1>{html.escape(titre)}</h1>
-{sous_titre}
-{corps}
-<div class="pied">BTS SIO · Bloc 1 · Support et mise à disposition de services informatiques</div>
+<h1>{titre}</h1>
+{chr(10).join(blocs)}
 </body>
 </html>
 """
@@ -138,9 +199,14 @@ def main():
     if SITE.exists():
         shutil.rmtree(SITE)
     SITE.mkdir()
-    total = 0
-    for annee in ANNEES:
-        total += publier_annee(annee, cle, maintenant)
+    cles = Cles(cle)
+    try:
+        total = 0
+        for annee in ANNEES:
+            total += publier_annee(annee, cles, maintenant)
+        (SITE / "cle-publique.pem").write_text(cles.publique, encoding="ascii")
+    finally:
+        cles.fermer()
     derniere = ANNEES[-1]
     (SITE / "index.html").write_text(
         f'<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">'
