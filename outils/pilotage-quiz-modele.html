@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Pilotage de l'évaluation SQL et PHP</title>
+<style>
+:root {
+  --fond: #ffffff; --fond-doux: #f5f6f8; --trait: #d3d9e0; --trait-fort: #9aa5b4;
+  --texte: #1d2530; --texte-doux: #4a5563; --texte-pale: #6b7684;
+  --marine: #1f3a5f; --marine-clair: #e8eef6; --or: #b8912a; --lien: #1a4f8b;
+  --vert: #2d6a3e; --vert-clair: #eef6f0; --orange: #8f5400; --orange-clair: #fdf5e6;
+  --rouge: #a12a2a; --rouge-clair: #fbeeee; --code-fond: #f6f7f9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--fond); color: var(--texte); font-family: "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif; font-size: 15px; line-height: 1.5; }
+.entete { background: var(--marine); color: #fff; display: flex; align-items: center; gap: 14px; padding: 0 24px; height: 52px; border-bottom: 3px solid var(--or); }
+.entete .titre { font-weight: 600; }
+.entete .prive { margin-left: auto; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.6); padding: 1px 8px; border-radius: 2px; }
+main { max-width: 1100px; margin: 0 auto; padding: 18px 22px 60px; }
+h1 { color: var(--marine); font-size: 1.45rem; margin-bottom: 10px; }
+h2 { color: var(--marine); font-size: 1.15rem; margin: 20px 0 8px; border-bottom: 1px solid var(--trait); padding-bottom: 3px; }
+h3 { color: var(--marine); font-size: 1rem; margin: 14px 0 6px; }
+p { margin-bottom: 8px; }
+ul, ol { margin: 4px 0 10px 22px; }
+li { margin-bottom: 3px; }
+code, .mono { font-family: Consolas, "Cascadia Mono", Menlo, monospace; font-size: 0.92em; }
+p code, li code, td code { background: var(--code-fond); border: 1px solid #e3e7ec; padding: 0 3px; }
+button { font: inherit; cursor: pointer; }
+.bouton { background: var(--marine); color: #fff; border: 1px solid var(--marine); padding: 6px 16px; border-radius: 2px; font-weight: 600; }
+.bouton:hover { background: #16304f; }
+.bouton:disabled { background: #9aa5b4; border-color: #9aa5b4; cursor: default; }
+.bouton.second { background: #fff; color: var(--marine); }
+.bouton.danger { background: #fff; color: var(--rouge); border-color: var(--rouge); }
+.bouton.grand { font-size: 1.1rem; padding: 9px 22px; }
+.barre-outils { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+.encadre { border: 1px solid var(--trait); border-left: 5px solid var(--lien); background: var(--marine-clair); padding: 8px 14px; margin: 10px 0; font-size: 0.93rem; }
+.encadre.attention { border-left-color: #c07a0c; background: var(--orange-clair); }
+.encadre.ok { border-left-color: var(--vert); background: var(--vert-clair); }
+.encadre.danger { border-left-color: var(--rouge); background: var(--rouge-clair); }
+.onglets { display: flex; gap: 2px; border-bottom: 2px solid var(--marine); margin-top: 14px; flex-wrap: wrap; }
+.onglets button { border: 1px solid var(--trait); border-bottom: none; background: var(--fond-doux); padding: 6px 14px; color: var(--texte-doux); }
+.onglets button.actif { background: var(--marine); color: #fff; border-color: var(--marine); }
+.panneau { padding-top: 6px; }
+table.liste { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 6px 0 12px; }
+table.liste th, table.liste td { border: 1px solid var(--trait); padding: 4px 8px; text-align: left; vertical-align: top; }
+table.liste th { background: var(--fond-doux); color: var(--marine); }
+table.liste td.c { text-align: center; }
+table.liste tr.lance td { color: var(--texte-pale); }
+.etiquette { font-size: 0.72rem; font-weight: 700; border: 1px solid var(--trait-fort); color: var(--texte-doux); padding: 0 5px; border-radius: 2px; }
+select, input[type=text], textarea { font: inherit; padding: 5px 8px; border: 1px solid var(--trait-fort); border-radius: 2px; }
+input.duree { width: 64px; }
+.carte { border: 1px solid var(--trait); padding: 14px 18px; margin: 10px 0; background: #fff; }
+.grand-code { font-family: Consolas, Menlo, monospace; font-size: 2.6rem; font-weight: 700; letter-spacing: 0.15em; color: var(--marine); }
+.chrono { font-family: Consolas, Menlo, monospace; font-size: 2rem; font-weight: 700; color: var(--marine); }
+.chrono.fini { color: var(--rouge); }
+.discret { color: var(--texte-pale); font-size: 0.85rem; }
+.ok { color: var(--vert); font-weight: 700; }
+.non { color: var(--rouge); font-weight: 700; }
+.vide { color: var(--orange); font-weight: 700; }
+.jauge { display: inline-block; height: 10px; background: var(--marine); vertical-align: middle; }
+.jauge-fond { display: inline-block; width: 120px; height: 10px; background: var(--fond-doux); border: 1px solid var(--trait); vertical-align: middle; margin-right: 6px; }
+.variante { border: 1px solid var(--trait); padding: 8px 12px; margin: 8px 0; background: var(--fond-doux); }
+.variante ol { list-style: upper-alpha; }
+.variante li.bonne { color: var(--vert); font-weight: 700; }
+pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-left: 4px solid var(--marine); padding: 6px 10px; margin: 6px 0; overflow-x: auto; font-family: Consolas, Menlo, monospace; font-size: 0.85rem; white-space: pre; }
+.cache { display: none !important; }
+#projection { position: fixed; inset: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; }
+#projection .p-tete { background: var(--marine); color: #fff; padding: 10px 28px; border-bottom: 4px solid var(--or); font-size: 1.1rem; display: flex; }
+#projection .p-tete span:last-child { margin-left: auto; opacity: 0.85; }
+#projection .p-corps { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 18px; padding: 20px; }
+#projection .p-titre { font-size: 3rem; font-weight: 700; color: var(--marine); }
+#projection .p-libelle { font-size: 1.6rem; color: var(--texte-doux); }
+#projection .p-code { font-family: Consolas, Menlo, monospace; font-size: 7rem; font-weight: 700; letter-spacing: 0.12em; color: var(--marine); border: 3px solid var(--marine); padding: 6px 40px; }
+#projection .p-chrono { font-family: Consolas, Menlo, monospace; font-size: 4.5rem; font-weight: 700; color: var(--marine); }
+#projection .p-chrono.fini { color: var(--rouge); }
+#projection .p-url { font-family: Consolas, Menlo, monospace; font-size: 2rem; color: var(--lien); }
+#projection .p-pied { padding: 10px 20px; display: flex; gap: 12px; justify-content: center; border-top: 1px solid var(--trait); background: var(--fond-doux); }
+@media print {
+  .entete, .onglets, .barre-outils, .sans-impression, #projection { display: none !important; }
+  .panneau.cache { display: none !important; }
+  main { padding: 0; max-width: none; }
+}
+</style>
+</head>
+<body>
+<header class="entete"><span class="titre">Pilotage de l'évaluation : SQL et PHP</span><span class="prive">Page du professeur</span></header>
+<main>
+<div class="encadre danger sans-impression"><strong>Ne projette pas cette page.</strong> Elle contient les codes et les réponses. Pendant l'épreuve, utilise le bouton <strong>Projection</strong> : il n'affiche que l'adresse, les codes et le temps.</div>
+
+<div class="barre-outils">
+  <label for="edition"><strong>Séance :</strong></label>
+  <select id="edition"></select>
+  <span id="resume-etat" class="discret"></span>
+  <button class="bouton" type="button" id="btn-projection">Projection</button>
+</div>
+
+<div class="onglets" id="onglets">
+  <button data-p="preparer" class="actif">1. Préparer</button>
+  <button data-p="seance">2. Conduire l'épreuve</button>
+  <button data-p="resultats">3. Copies et résultats</button>
+  <button data-p="secours">Codes de secours</button>
+  <button data-p="aide">Mode d'emploi</button>
+</div>
+
+<!-- 1. Préparer -->
+<section class="panneau" id="p-preparer">
+  <h2>Choisir les questions</h2>
+  <p>Coche les thèmes à évaluer. Chaque thème donne <strong>une question</strong> par élève, tirée parmi 4 variantes. Ne garde que les TP réellement terminés par le groupe.</p>
+  <div class="barre-outils" id="raccourcis">
+    <button class="bouton second" type="button" data-tp="10">TP 10 seul</button>
+    <button class="bouton second" type="button" data-tp="11">TP 10 et 11</button>
+    <button class="bouton second" type="button" data-tp="12">TP 10 à 12</button>
+    <button class="bouton second" type="button" data-tp="13">TP 10 à 13</button>
+  </div>
+  <table class="liste" id="table-choix"></table>
+  <p id="total-choix"></p>
+  <div id="choix-verrou" class="encadre attention cache">L'épreuve de cette séance a commencé : le choix des questions ne peut plus changer. (Onglet 3, « Réinitialiser » pour tout reprendre.)</div>
+</section>
+
+<!-- 2. Conduire -->
+<section class="panneau cache" id="p-seance">
+  <div id="seance-contenu"></div>
+  <details class="carte sans-impression" id="bloc-reponses">
+    <summary><strong>Voir la question en cours et ses réponses</strong> (ne pas projeter)</summary>
+    <div id="reponses-courantes"></div>
+  </details>
+</section>
+
+<!-- 3. Résultats -->
+<section class="panneau cache" id="p-resultats">
+  <div class="barre-outils sans-impression">
+    <button class="bouton" type="button" id="btn-relever">Relever les copies</button>
+    <button class="bouton second" type="button" id="btn-csv">Exporter les notes (CSV)</button>
+    <button class="bouton second" type="button" id="btn-json">Archiver les copies (fichier)</button>
+    <button class="bouton second" type="button" onclick="window.print()">Imprimer</button>
+    <span id="msg-relever" class="discret"></span>
+  </div>
+  <div id="resultats-contenu"></div>
+  <h2 class="sans-impression">Ajouter des copies à la main</h2>
+  <p class="sans-impression">Si la remise automatique d'un élève a échoué, colle ici son code de remise (il commence par <code>SIO1.</code>). Plusieurs codes peuvent être collés à la suite.</p>
+  <p class="sans-impression"><textarea id="coller" rows="4" style="width:100%" placeholder="SIO1...."></textarea></p>
+  <p class="sans-impression"><button class="bouton second" type="button" id="btn-coller">Ajouter</button> <span id="msg-coller" class="discret"></span></p>
+  <h2 class="sans-impression">Remettre la séance à zéro</h2>
+  <p class="sans-impression">Efface, sur ce poste, la progression et les copies de la séance choisie (pour refaire un essai, par exemple). Exporte d'abord les notes si besoin.</p>
+  <p class="sans-impression"><button class="bouton danger" type="button" id="btn-raz">Réinitialiser cette séance</button></p>
+</section>
+
+<!-- Secours -->
+<section class="panneau cache" id="p-secours">
+  <h2>Codes de secours</h2>
+  <p>Imprime cette feuille avant l'épreuve. Si ce poste tombe en panne, tu peux continuer en lisant les codes à voix haute ou en les écrivant au tableau, dans l'ordre. Les copies restent sur les postes des élèves ; tu les relèveras ensuite depuis cette page.</p>
+  <div id="secours-contenu"></div>
+</section>
+
+<!-- Aide -->
+<section class="panneau cache" id="p-aide">
+  <h2>Avant l'épreuve</h2>
+  <ol>
+    <li>Fais une répétition avec la séance <strong>Essai</strong> : ouvre l'adresse des élèves sur un second appareil (ton téléphone suffit), lance deux questions, termine, relève la copie, donne la correction. Puis « Réinitialiser cette séance » dans l'onglet 3, et sur l'appareil d'essai, utilise une fenêtre de navigation privée pour repartir de zéro.</li>
+    <li>Choisis les questions (onglet 1) : seulement les TP terminés par le groupe. Compte environ 1 min 30 par question, explications comprises.</li>
+    <li>Imprime la feuille des codes de secours.</li>
+    <li>Demande aux élèves de venir avec un ordinateur chargé et un navigateur à jour (Chrome, Edge, Firefox ou Safari).</li>
+  </ol>
+  <h2>Pendant l'épreuve</h2>
+  <ol>
+    <li>Onglet 2, <strong>Ouvrir la séance</strong>, puis <strong>Projection</strong> : les élèves voient l'adresse et le code de la séance. Ils tapent leur nom, leur prénom et ce code. La liste des présents se remplit quand la liaison fonctionne.</li>
+    <li>Un élève qui a droit à un temps majoré reçoit, en aparté, le <strong>code de séance à temps majoré</strong> (onglet 2) à la place du code normal : toutes ses questions durent un tiers de plus.</li>
+    <li><strong>Lancer la question 1</strong> : la question s'ouvre seule chez les élèves si la liaison fonctionne ; sinon ils tapent le code projeté. Le temps de chaque élève part de l'ouverture chez lui.</li>
+    <li>Quand le temps est écoulé, <strong>Question suivante</strong>. Un élève qui n'a pas ouvert une question à temps ne peut plus l'ouvrir ensuite : elle compte zéro.</li>
+    <li>Après la dernière question, <strong>Terminer l'épreuve</strong> : les copies partent toutes seules. Vérifie le nombre de copies reçues dans l'onglet 3 (bouton « Relever les copies »).</li>
+    <li>Quand toutes les copies sont là, <strong>Donner la correction</strong> : chaque élève voit sa note, le détail de ses réponses et ses axes de travail.</li>
+  </ol>
+  <h2>Si quelque chose ne va pas</h2>
+  <ul>
+    <li><strong>La liaison ne marche pas</strong> (le réseau de l'établissement bloque ntfy.sh) : rien n'est perdu. Les élèves tapent les codes projetés. À la fin, chaque élève ouvre le cadre « Code de remise » et t'envoie ce texte (messagerie de l'ENT, Teams, courriel) ; colle les codes dans l'onglet 3.</li>
+    <li><strong>Un élève recharge la page ou redémarre son ordinateur</strong> : il retrouve son épreuve où il en était, avec le temps qui a continué de courir.</li>
+    <li><strong>Un élève a deux copies</strong> (il a effacé les données de son navigateur et recommencé) : le tableau des résultats le signale. Seule la première copie reçue est notée.</li>
+    <li><strong>Sorties de page</strong> : la colonne compte les fois où l'élève a quitté la page pendant une question (autre onglet, autre logiciel). C'est un indice, pas une preuve : à toi d'en juger.</li>
+    <li>Les copies restent environ 12 heures sur le relais ntfy.sh : relève-les et exporte les notes le jour même.</li>
+    <li><strong>En classe entière</strong> : le relais public accepte une trentaine de connexions par adresse internet, et tout l'établissement sort souvent par la même. Au-delà de 25 élèves environ, une partie des postes passera en mode « code à taper » : c'est prévu, rien n'est perdu. L'épreuve se passe au mieux en demi-groupe.</li>
+    <li><strong>Deux demi-groupes à des moments différents</strong> : chaque groupe a sa propre séance (ses propres codes), et chaque thème a 4 variantes aux propositions mélangées. Un élève du groupe 1 qui raconte « sa » question n'aide guère un élève du groupe 2. Le plus sûr reste de faire passer les deux groupes dans la même demi-journée.</li>
+  </ul>
+  <h2>Ce qu'il faut savoir</h2>
+  <ul>
+    <li>Le sujet publié est chiffré question par question : tant que tu n'as pas donné son code, une question est illisible, même en fouillant la page. Les bonnes réponses ne sont envoyées aux élèves qu'avec le code de correction.</li>
+    <li>Chaque élève reçoit une variante par thème, tirée d'après son nom, et les propositions sont mélangées : deux voisins ont rarement la même question, et jamais dans le même ordre.</li>
+    <li>Les copies et la liste des présents sont chiffrées pour cette page : le relais ntfy.sh ne voit passer que du texte illisible. Les ordres « question suivante » passent en clair (ils ne contiennent que le code projeté).</li>
+    <li>La note est sur 20 : une question réussie vaut 1 point, ramené sur 20 et arrondi au demi-point. Pas de point négatif.</li>
+    <li>Cette page garde la progression dans ce navigateur : utilise toujours le même navigateur, sur le même poste, pendant toute l'épreuve.</li>
+  </ul>
+</section>
+</main>
+
+<div id="projection" class="cache">
+  <div class="p-tete"><span>BTS SIO 1<sup>re</sup> année, Bloc 1 : évaluation SQL et PHP</span><span id="p-label"></span></div>
+  <div class="p-corps" id="p-corps"></div>
+  <div class="p-pied" id="p-pied"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var D = /*__DONNEES__*/null;
+  var subtle = window.crypto && window.crypto.subtle;
+  var $ = function (id) { return document.getElementById(id); };
+  var ed = null, E = null, S = null;        // édition choisie, ses données, son état
+  var minuteur = null, releve = null, panneau = "preparer";
+  var TABLE = [
+    [1, "mdurand", "Martin", "Durand", "Informatique", "admin"], [2, "jmoreau", "Julie", "Moreau", "Accueil", "salarie"],
+    [3, "kbenali", "Karim", "Benali", "Comptabilité", "salarie"], [4, "lpetit", "Lucas", "Petit", "Technique", "salarie"],
+    [5, "sgarcia", "Sofia", "Garcia", "Technique", "salarie"], [6, "tleroy", "Thomas", "Leroy", "Technique", "salarie"],
+    [7, "cfontaine", "Camille", "Fontaine", "Commercial", "salarie"], [8, "nrousseau", "Nadia", "Rousseau", "Commercial", "salarie"]
+  ];
+
+  function echapper(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function sansAccents(t) { return String(t).normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function cleEleve(nom, prenom) { return sansAccents(nom + "|" + prenom).toLowerCase().replace(/[^a-z|]/g, ""); }
+  function joli(code) { return code.slice(0, 3) + " " + code.slice(3); }
+  function slot(id) { return D.slots.filter(function (s) { return s.id === id; })[0]; }
+  function mmss(ms) { var s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
+  function versOctets(b) { var s = atob(b), o = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) o[i] = s.charCodeAt(i); return o; }
+
+  // ───────── état de la séance (gardé dans ce navigateur) ─────────
+  function cleStock() { return "sio-pilotage-quiz:" + ed + ":" + E.codes.seance; }
+  function nouvelEtat() { return { choix: D.slots.map(function (s) { return s.id; }), phase: "pret", debut: 0, lances: [], fin: 0, corr: "", presents: {}, copies: {} }; }
+  function charger() { try { S = JSON.parse(localStorage.getItem(cleStock()) || "null"); } catch (e) { S = null; } if (!S) S = nouvelEtat(); }
+  function sauver() { try { localStorage.setItem(cleStock(), JSON.stringify(S)); } catch (e) {} }
+  function choisis() { return D.slots.filter(function (s) { return S.choix.indexOf(s.id) >= 0; }); }
+  function masque() {
+    var m = 0;
+    S.lances.forEach(function (l) { m |= 1 << (slot(l.id).seq - 1); });
+    return ("000" + m.toString(16).toUpperCase()).slice(-4);
+  }
+
+  // ───────── relais ntfy.sh ─────────
+  function publier(objet) {
+    return fetch(D.ntfy + "/" + E.ctrl, { method: "POST", body: JSON.stringify(objet) })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return true; })
+      .then(function () { liaison(true); }, function () { liaison(false); });
+  }
+  var liaisonOk = null;
+  function liaison(ok) { liaisonOk = ok; afficherResume(); }
+
+  var clePrivee = null;
+  function privee() {
+    if (clePrivee) return Promise.resolve(clePrivee);
+    return subtle.importKey("jwk", E.priv, { name: "ECDH", namedCurve: "P-256" }, false, ["deriveKey"]).then(function (k) { clePrivee = k; return k; });
+  }
+  function ouvrir(texte) {
+    texte = String(texte).trim();
+    if (texte.indexOf("SIO1.") !== 0) return Promise.resolve(null);
+    var p;
+    try { p = JSON.parse(atob(texte.slice(5))); } catch (e) { return Promise.resolve(null); }
+    return privee().then(function (priv) {
+      return subtle.importKey("raw", versOctets(p.e), { name: "ECDH", namedCurve: "P-256" }, false, [])
+        .then(function (pub) { return subtle.deriveKey({ name: "ECDH", public: pub }, priv, { name: "AES-GCM", length: 256 }, false, ["decrypt"]); })
+        .then(function (k) { return subtle.decrypt({ name: "AES-GCM", iv: versOctets(p.i) }, k, versOctets(p.d)); })
+        .then(function (c) { return JSON.parse(new TextDecoder().decode(c)); });
+    }).catch(function () { return null; });
+  }
+
+  function ranger(m, origine) {
+    if (!m || m.ed !== ed) return false;
+    var k = cleEleve(m.nom, m.prenom);
+    if (m.k === "join") {
+      var p = S.presents[k];
+      if (!p) p = S.presents[k] = { nom: m.nom, prenom: m.prenom, mult: m.mult, t: m.t, joins: [] };
+      p.joins = p.joins || [];
+      if (p.joins.indexOf(m.t) < 0) p.joins.push(m.t);
+      return true;
+    }
+    if (m.k === "copie") {
+      if (!S.presents[k]) S.presents[k] = { nom: m.nom, prenom: m.prenom, mult: m.mult, t: m.debut };
+      var liste = S.copies[k] = S.copies[k] || [];
+      var deja = liste.some(function (c) { return c.t === m.t && c.debut === m.debut; });
+      if (!deja) { m.origine = origine; liste.push(m); liste.sort(function (a, b) { return a.t - b.t; }); }
+      return !deja;
+    }
+    return false;
+  }
+
+  function relever(manuel) {
+    if (!S.debut) { if (manuel) $("msg-relever").textContent = "La séance n'est pas encore ouverte."; return Promise.resolve(); }
+    if (manuel) $("msg-relever").textContent = "Relevé en cours...";
+    var depuis = Math.floor(S.debut / 1000) - 120;
+    return fetch(D.ntfy + "/" + E.res + "/json?poll=1&since=" + depuis, { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (txt) {
+        var lignes = txt.split("\n").filter(Boolean).map(function (l) { try { return JSON.parse(l); } catch (e) { return null; } })
+          .filter(function (x) { return x && x.event === "message" && x.message; });
+        return Promise.all(lignes.map(function (x) { return ouvrir(x.message); }));
+      })
+      .then(function (messages) {
+        var n = 0;
+        messages.forEach(function (m) { if (ranger(m, "relais")) n++; });
+        sauver();
+        liaison(true);
+        if (manuel) $("msg-relever").textContent = "Relevé terminé. " + nbCopies() + " copie(s) au total.";
+        rafraichir();
+      })
+      .catch(function () {
+        liaison(false);
+        if (manuel) $("msg-relever").textContent = "Le relais ntfy.sh ne répond pas. Utilise les codes de remise des élèves (en bas de page).";
+      });
+  }
+  function nbCopies() { return Object.keys(S.copies).length; }
+  function relevePeriodique() {
+    clearInterval(releve);
+    releve = setInterval(function () {
+      if (document.hidden) return;
+      if (S.phase === "accueil" || S.phase === "fin" || (S.phase === "question" && Object.keys(S.presents).length === 0)) relever(false);
+    }, 15000);
+  }
+
+  // ───────── notes ─────────
+  function noter(copie) {
+    var lances = S.lances.map(function (l) { return l.id; });
+    var detail = {}, bonnes = 0, sorties = 0;
+    lances.forEach(function (id) {
+      var r = copie.r.filter(function (x) { return x[0] === id; })[0];
+      var s = slot(id);
+      if (!r || r[2] < 0) detail[id] = "vide";
+      else if (s.variants[r[1]] && r[2] === s.variants[r[1]].ok) { detail[id] = "ok"; bonnes++; }
+      else detail[id] = "non";
+      if (r) sorties += r[4];
+    });
+    var n = lances.length;
+    return { bonnes: bonnes, n: n, note: n ? Math.round(bonnes / n * 40) / 2 : 0, detail: detail, sorties: sorties };
+  }
+  function eleves() {
+    var cles = Object.keys(S.presents);
+    Object.keys(S.copies).forEach(function (k) { if (cles.indexOf(k) < 0) cles.push(k); });
+    return cles.map(function (k) {
+      var p = S.presents[k] || S.copies[k][0];
+      var copies = S.copies[k] || [];
+      var joins = S.presents[k] && S.presents[k].joins ? S.presents[k].joins.length : 0;
+      return { k: k, nom: p.nom, prenom: p.prenom, mult: (copies[0] || p).mult, copie: copies[0] || null, nb: copies.length, joins: joins };
+    }).sort(function (a, b) { return (a.nom + a.prenom).localeCompare(b.nom + b.prenom, "fr"); });
+  }
+
+  // ───────── affichage ─────────
+  function afficherResume() {
+    var t = { pret: "pas encore ouverte", accueil: "ouverte, accueil des élèves", question: "épreuve en cours", fin: "épreuve terminée", corr: "correction donnée" }[S.phase];
+    var l = liaisonOk === null ? "" : (liaisonOk ? " | liaison ntfy.sh : active" : " | liaison ntfy.sh : en panne (codes à taper)");
+    $("resume-etat").textContent = "Séance " + t + l;
+  }
+
+  function tableChoix() {
+    var verrou = S.phase !== "pret";
+    var h = "<tr><th></th><th>N°</th><th>TP</th><th></th><th>Thème</th><th>Durée</th></tr>";
+    D.slots.forEach(function (s) {
+      var c = S.choix.indexOf(s.id) >= 0;
+      h += "<tr><td class=\"c\"><input type=\"checkbox\" data-id=\"" + s.id + "\"" + (c ? " checked" : "") + (verrou ? " disabled" : "") + "></td><td>" + s.seq + "</td><td>" + s.tp + "</td><td><span class=\"etiquette\">" + s.tag + "</span></td><td>" + echapper(s.theme) + "</td><td>" + s.duree + " s</td></tr>";
+    });
+    $("table-choix").innerHTML = h;
+    $("table-choix").querySelectorAll("input").forEach(function (i) {
+      i.addEventListener("change", function () {
+        var id = i.getAttribute("data-id");
+        S.choix = S.choix.filter(function (x) { return x !== id; });
+        if (i.checked) S.choix.push(id);
+        sauver(); totalChoix();
+      });
+    });
+    $("choix-verrou").classList.toggle("cache", !verrou);
+    document.querySelectorAll("#raccourcis button").forEach(function (b) { b.disabled = verrou; });
+    totalChoix();
+  }
+  function totalChoix() {
+    var c = choisis(), sec = c.reduce(function (a, s) { return a + s.duree; }, 0);
+    var sql = c.filter(function (s) { return s.tag === "SQL"; }).length;
+    $("total-choix").innerHTML = "<strong>" + c.length + " question(s)</strong> : " + sql + " de SQL, " + (c.length - sql) + " de PHP. Temps de réponse cumulé : " + mmss(sec * 1000) + ". Prévois environ " + Math.ceil((sec + 25 * c.length) / 60 + 5) + " minutes avec l'accueil et la correction.";
+  }
+
+  function lanceCourant() { return S.lances[S.lances.length - 1] || null; }
+
+  function seance() {
+    var c = choisis(), h = "";
+    var dernier = lanceCourant();
+    var prochain = c.filter(function (s) { return !S.lances.some(function (l) { return l.id === s.id; }); })[0];
+    if (S.phase === "pret") {
+      h += "<h2>Ouvrir la séance</h2><p>Séance <strong>" + echapper(E.label) + "</strong>, " + c.length + " question(s) choisie(s). Le choix des questions sera verrouillé.</p>";
+      h += c.length ? '<p><button class="bouton grand" type="button" id="btn-ouvrir">Ouvrir la séance</button></p>' : '<div class="encadre attention">Choisis au moins une question dans l\'onglet 1.</div>';
+    }
+    if (S.phase !== "pret") {
+      h += '<div class="carte"><p>Adresse pour les élèves : <strong class="mono">' + echapper(D.url) + '</strong></p>';
+      h += '<p>Code de la séance : <span class="grand-code">' + joli(E.codes.seance) + "</span></p>";
+      h += '<p class="discret">Code de séance à temps majoré (× ' + String(D.tiers).replace(".", ",") + "), à donner en aparté : <strong class=\"mono\">" + joli(E.codes.tiers) + "</strong></p></div>";
+    }
+    if (S.phase === "accueil" || S.phase === "question") {
+      var pres = Object.keys(S.presents).length;
+      h += "<p>Élèves connectés (vus par la liaison) : <strong>" + pres + "</strong> " + (pres ? '<span class="discret">' + eleves().map(function (e) { return echapper(e.prenom + " " + e.nom); }).join(", ") + "</span>" : "") + ' <button class="bouton second" type="button" id="btn-presents">Actualiser</button></p>';
+    }
+    if (S.phase === "accueil" || S.phase === "question") {
+      if (dernier) {
+        var s = slot(dernier.id), num = S.lances.length;
+        h += '<div class="carte"><h3>Question ' + num + " sur " + c.length + " : " + echapper(s.theme) + " (TP " + s.tp + ")</h3>";
+        h += '<p>Code : <span class="grand-code">' + joli(E.codes.questions[s.id]) + "</span></p>";
+        h += '<p>Temps restant : <span class="chrono" id="chrono-prof"></span> <span class="discret" id="chrono-tt"></span></p></div>';
+      }
+      h += '<div class="barre-outils">';
+      if (prochain) h += '<button class="bouton grand" type="button" id="btn-suivante">' + (dernier ? "Question suivante (" + (S.lances.length + 1) + " sur " + c.length + ")" : "Lancer la question 1") + "</button>";
+      if (dernier) h += '<button class="bouton ' + (prochain ? "second" : "grand") + '" type="button" id="btn-terminer">Terminer l\'épreuve</button>';
+      h += "</div>";
+      if (dernier && !prochain) h += '<div class="encadre">Dernière question. Quand le temps est écoulé, termine l\'épreuve : les copies partent alors toutes seules.</div>';
+    }
+    if (S.phase === "fin" || S.phase === "corr") {
+      h += '<div class="carte"><h3>Épreuve terminée</h3><p>Code de fin (pour les élèves dont la page ne s\'est pas arrêtée seule) : <span class="grand-code">' + joli(E.codes.fin) + "</span></p>";
+      var el = eleves(), recues = el.filter(function (e) { return e.copie; }).length;
+      h += "<p>Copies reçues : <strong>" + recues + "</strong> sur " + el.length + " élève(s) connu(s). <button class=\"bouton second\" type=\"button\" id=\"btn-presents\">Relever les copies</button></p>";
+      var manquent = el.filter(function (e) { return !e.copie; });
+      if (manquent.length) h += '<p class="discret">Copie manquante : ' + manquent.map(function (e) { return echapper(e.prenom + " " + e.nom); }).join(", ") + ". Ces élèves peuvent cliquer sur « Renvoyer ma copie », ou t'envoyer leur code de remise.</p>";
+      h += "</div>";
+      if (S.phase === "fin") h += '<p><button class="bouton grand" type="button" id="btn-corr">Donner la correction aux élèves</button></p><p class="discret">À faire quand toutes les copies sont relevées : après la correction, les élèves connaissent les bonnes réponses.</p>';
+      else h += '<div class="carte"><h3>Correction donnée</h3><p>Code de la correction : <span class="grand-code">' + joli(E.codes.correction) + " " + masque() + "</span></p></div>";
+    }
+    $("seance-contenu").innerHTML = h;
+    var b;
+    if ((b = $("btn-ouvrir"))) b.onclick = ouvrirSeance;
+    if ((b = $("btn-suivante"))) b.onclick = function () { lancerSuivante(prochain); };
+    if ((b = $("btn-terminer"))) b.onclick = terminer;
+    if ((b = $("btn-presents"))) b.onclick = function () { relever(true).then(seance); };
+    if ((b = $("btn-corr"))) b.onclick = donnerCorrection;
+    reponsesCourantes();
+    tic();
+  }
+
+  function variantesHTML(s) {
+    var h = "<p><strong>" + echapper(s.theme) + "</strong> (TP " + s.tp + ", " + s.duree + " s). Axe de travail donné aux élèves : " + echapper(s.axe) + "</p>";
+    s.variants.forEach(function (v, i) {
+      h += '<div class="variante"><p><strong>Variante ' + (i + 1) + ".</strong> " + v.q + "</p>";
+      if (v.code) h += '<pre class="bloc">' + echapper(v.code) + "</pre>";
+      if (v.table) h += '<p class="discret">(avec la table des 8 comptes de départ)</p>';
+      h += "<ol>" + v.o.map(function (o, j) { return '<li class="' + (j === v.ok ? "bonne" : "") + '">' + (v.oc ? "<code>" + o + "</code>" : o) + (j === v.ok ? " (bonne réponse)" : "") + "</li>"; }).join("") + "</ol>";
+      if (v.ex) h += '<p class="discret">' + v.ex + "</p>";
+      h += "</div>";
+    });
+    return h;
+  }
+  function reponsesCourantes() {
+    var d = lanceCourant();
+    $("bloc-reponses").classList.toggle("cache", !d);
+    if (d) $("reponses-courantes").innerHTML = variantesHTML(slot(d.id));
+  }
+
+  function tic() {
+    clearInterval(minuteur);
+    var maj = function () {
+      var d = lanceCourant();
+      var reste = d ? d.t + slot(d.id).duree * 1000 - Date.now() : 0;
+      var resteTT = d ? d.t + slot(d.id).duree * D.tiers * 1000 - Date.now() : 0;
+      var actif = d && (S.phase === "question");
+      var el = $("chrono-prof");
+      if (el) {
+        el.textContent = actif ? mmss(reste) : "--:--";
+        el.className = "chrono" + (actif && reste <= 0 ? " fini" : "");
+        var tt = eleves().some(function (e) { return e.mult > 1; });
+        $("chrono-tt").textContent = actif && tt && resteTT > 0 && reste <= 0 ? "Temps majoré encore en cours : " + mmss(resteTT) : "";
+      }
+      projeter(actif ? reste : null);
+    };
+    maj();
+    minuteur = setInterval(maj, 250);
+  }
+
+  // ───────── actions ─────────
+  function ouvrirSeance() {
+    if (!choisis().length) return;
+    S.phase = "accueil"; S.debut = Date.now();
+    sauver(); tableChoix(); seance(); afficherResume(); relevePeriodique();
+  }
+  function lancerSuivante(s) {
+    var d = lanceCourant();
+    if (d && S.phase === "question") {
+      var reste = d.t + slot(d.id).duree * 1000 - Date.now();
+      if (reste > 3000 && !confirm("Le temps de la question en cours n'est pas écoulé (" + mmss(reste) + "). Lancer quand même la suivante ?")) return;
+    }
+    S.lances.push({ id: s.id, t: Date.now() });
+    S.phase = "question";
+    sauver();
+    publier({ k: "q", n: s.seq, c: E.codes.questions[s.id] });
+    seance(); afficherResume();
+  }
+  function terminer() {
+    var d = lanceCourant();
+    var reste = d ? d.t + slot(d.id).duree * 1000 - Date.now() : 0;
+    if (reste > 3000 && !confirm("Le temps de la dernière question n'est pas écoulé (" + mmss(reste) + "). Terminer quand même ?")) return;
+    if (choisis().length > S.lances.length && !confirm("Toutes les questions choisies n'ont pas été lancées. Terminer quand même ? Seules les questions lancées seront notées.")) return;
+    S.phase = "fin"; S.fin = Date.now();
+    sauver();
+    publier({ k: "fin", c: E.codes.fin });
+    seance(); afficherResume();
+    setTimeout(function () { relever(false).then(seance); }, 8000);
+  }
+  function donnerCorrection() {
+    var el = eleves(), manquent = el.filter(function (e) { return !e.copie; }).length;
+    if (manquent && !confirm(manquent + " copie(s) manquent encore. Après la correction, les élèves connaîtront les réponses. Donner la correction quand même ?")) return;
+    S.phase = "corr"; S.corr = E.codes.correction + masque();
+    sauver();
+    publier({ k: "corr", c: S.corr });
+    seance(); afficherResume(); rafraichir();
+  }
+
+  // ───────── résultats ─────────
+  function rafraichir() {
+    if (panneau === "resultats") resultats();
+    if (panneau === "seance") seance();
+  }
+  function resultats() {
+    var el = eleves(), lances = S.lances.map(function (l) { return l.id; });
+    var h = "<h2>Résultats de la séance " + echapper(E.label) + "</h2>";
+    if (!lances.length) { $("resultats-contenu").innerHTML = h + "<p>Aucune question n'a encore été lancée.</p>"; return; }
+    h += "<p>" + lances.length + " question(s) notée(s). " + el.filter(function (e) { return e.copie; }).length + " copie(s) reçue(s) sur " + el.length + " élève(s).</p>";
+    h += '<table class="liste"><tr><th>Nom</th><th>Prénom</th><th>Note / 20</th><th>Bonnes</th>';
+    lances.forEach(function (id, i) { h += '<th class="c" title="' + echapper(slot(id).theme) + '">Q' + (i + 1) + "</th>"; });
+    h += "<th>Sorties de page</th><th>Remarque</th></tr>";
+    var parQ = lances.map(function () { return [0, 0]; }), notes = [];
+    el.forEach(function (e) {
+      h += "<tr><td>" + echapper(e.nom.toUpperCase()) + "</td><td>" + echapper(e.prenom) + "</td>";
+      if (!e.copie) {
+        h += '<td colspan="' + (lances.length + 3) + '" class="vide">Pas de copie reçue</td><td></td></tr>';
+        return;
+      }
+      var n = noter(e.copie);
+      notes.push(n.note);
+      h += "<td><strong>" + String(n.note).replace(".", ",") + "</strong></td><td>" + n.bonnes + " / " + n.n + "</td>";
+      lances.forEach(function (id, i) {
+        var d = n.detail[id];
+        parQ[i][1]++; if (d === "ok") parQ[i][0]++;
+        h += '<td class="c ' + d + '">' + (d === "ok" ? "1" : d === "non" ? "0" : "–") + "</td>";
+      });
+      var rem = [];
+      if (e.mult > 1) rem.push("temps majoré");
+      if (e.nb > 1) rem.push(e.nb + " copies reçues : la première est notée");
+      if (e.joins > 1) rem.push("a commencé " + e.joins + " fois (données effacées ?)");
+      if (e.copie.origine === "manuel") rem.push("copie collée à la main");
+      h += '<td class="c' + (n.sorties ? " non" : "") + '">' + n.sorties + "</td><td>" + rem.join(" ; ") + "</td></tr>";
+    });
+    h += "</table>";
+    if (notes.length) {
+      var moy = notes.reduce(function (a, b) { return a + b; }, 0) / notes.length;
+      h += "<p>Moyenne : <strong>" + moy.toFixed(1).replace(".", ",") + " / 20</strong> sur " + notes.length + " copie(s). Plus basse : " + String(Math.min.apply(null, notes)).replace(".", ",") + ", plus haute : " + String(Math.max.apply(null, notes)).replace(".", ",") + ".</p>";
+      h += "<h2>Réussite par question</h2><p>Pour préparer la remédiation : les notions les moins réussies sont à reprendre en classe.</p>";
+      h += '<table class="liste"><tr><th>Q</th><th>TP</th><th>Thème</th><th>Réussite</th></tr>';
+      lances.forEach(function (id, i) {
+        var s = slot(id), p = parQ[i][1] ? parQ[i][0] / parQ[i][1] : 0;
+        h += "<tr><td>Q" + (i + 1) + "</td><td>" + s.tp + "</td><td>" + echapper(s.theme) + '</td><td><span class="jauge-fond"><span class="jauge" style="width:' + Math.round(p * 120) + 'px"></span></span>' + Math.round(p * 100) + " % (" + parQ[i][0] + " / " + parQ[i][1] + ")</td></tr>";
+      });
+      h += "</table>";
+    }
+    $("resultats-contenu").innerHTML = h;
+  }
+
+  function telecharger(nom, contenu, type) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([contenu], { type: type }));
+    a.download = nom;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  $("btn-csv").onclick = function () {
+    var lances = S.lances.map(function (l) { return l.id; });
+    var t = ["Nom", "Prénom", "Note sur 20", "Bonnes réponses", "Questions"].concat(lances.map(function (id, i) { return "Q" + (i + 1) + " " + slot(id).theme; })).concat(["Sorties de page", "Temps majoré", "Copies reçues"]);
+    var lignes = [t];
+    eleves().forEach(function (e) {
+      if (!e.copie) { lignes.push([e.nom.toUpperCase(), e.prenom, "ABS", "", lances.length]); return; }
+      var n = noter(e.copie);
+      lignes.push([e.nom.toUpperCase(), e.prenom, String(n.note).replace(".", ","), n.bonnes, n.n]
+        .concat(lances.map(function (id) { return n.detail[id] === "ok" ? 1 : 0; }))
+        .concat([n.sorties, e.mult > 1 ? "oui" : "non", e.nb]));
+    });
+    var csv = "﻿" + lignes.map(function (l) { return l.map(function (c) { c = String(c); return /[;"\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(";"); }).join("\r\n");
+    telecharger("notes-quiz-sql-php-" + ed + ".csv", csv, "text/csv;charset=utf-8");
+  };
+  $("btn-json").onclick = function () {
+    telecharger("copies-quiz-sql-php-" + ed + ".json", JSON.stringify({ edition: E.label, lances: S.lances, copies: S.copies, presents: S.presents }, null, 1), "application/json");
+  };
+  $("btn-relever").onclick = function () { relever(true); };
+  $("btn-coller").onclick = function () {
+    var morceaux = $("coller").value.split(/\s+/).filter(function (x) { return x.indexOf("SIO1.") === 0; });
+    if (!morceaux.length) { $("msg-coller").textContent = "Aucun code de remise trouvé."; return; }
+    Promise.all(morceaux.map(ouvrir)).then(function (ms) {
+      var ok = 0, autre = 0, illisible = 0;
+      ms.forEach(function (m) {
+        if (!m) illisible++;
+        else if (m.ed !== ed) autre++;
+        else if (m.k === "copie" && ranger(m, "manuel")) ok++;
+      });
+      sauver();
+      $("msg-coller").textContent = ok + " copie(s) ajoutée(s)" + (autre ? ", " + autre + " d'une autre séance" : "") + (illisible ? ", " + illisible + " illisible(s)" : "") + ".";
+      if (ok) $("coller").value = "";
+      rafraichir();
+    });
+  };
+  $("btn-raz").onclick = function () {
+    if (!confirm("Effacer la progression et les copies de la séance « " + E.label + " » sur ce poste ?")) return;
+    S = nouvelEtat(); sauver(); clePrivee = null; tout();
+  };
+
+  // ───────── codes de secours ─────────
+  function secours() {
+    var c = choisis();
+    var h = "<p>Séance <strong>" + echapper(E.label) + "</strong>. Adresse : <span class=\"mono\">" + echapper(D.url) + "</span></p>";
+    h += '<table class="liste"><tr><th>Étape</th><th>Code</th></tr>';
+    h += "<tr><td>Code de la séance</td><td class=\"mono\"><strong>" + joli(E.codes.seance) + "</strong></td></tr>";
+    h += "<tr><td>Code de la séance à temps majoré (en aparté)</td><td class=\"mono\">" + joli(E.codes.tiers) + "</td></tr>";
+    c.forEach(function (s, i) { h += "<tr><td>Question " + (i + 1) + " : " + echapper(s.theme) + " (" + s.duree + " s)</td><td class=\"mono\"><strong>" + joli(E.codes.questions[s.id]) + "</strong></td></tr>"; });
+    h += "<tr><td>Fin de l'épreuve</td><td class=\"mono\"><strong>" + joli(E.codes.fin) + "</strong></td></tr>";
+    h += "<tr><td>Correction (à donner après le relevé des copies)</td><td class=\"mono\"><strong>" + joli(E.codes.correction) + "</strong> suivi de " + masqueChoix() + "</td></tr>";
+    h += "</table><p class=\"discret\">Les 4 caractères après le code de correction indiquent les questions lancées : ceux de la ligne ci-dessus valent si toutes les questions cochées ont été lancées.</p>";
+    $("secours-contenu").innerHTML = h;
+  }
+  function masqueChoix() {
+    var m = 0; choisis().forEach(function (s) { m |= 1 << (s.seq - 1); });
+    return "<strong>" + ("000" + m.toString(16).toUpperCase()).slice(-4) + "</strong>";
+  }
+
+  // ───────── projection ─────────
+  var enProjection = false;
+  $("btn-projection").onclick = function () {
+    enProjection = true;
+    $("projection").classList.remove("cache");
+    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {});
+    projeter(null, true);
+  };
+  function quitterProjection() {
+    enProjection = false;
+    $("projection").classList.add("cache");
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+    seance();
+  }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && enProjection) quitterProjection(); });
+  // Échap quitte d'abord le plein écran (le navigateur garde la touche) : on quitte alors la projection.
+  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement && enProjection) quitterProjection(); });
+  var dernierePhase = "";
+  function projeter(reste, force) {
+    if (!enProjection) return;
+    $("p-label").textContent = E.label;
+    var d = lanceCourant(), cle = S.phase + "|" + S.lances.length;
+    if (force || cle !== dernierePhase) {
+      dernierePhase = cle;
+      var h = "", pied = "";
+      var c = choisis(), prochain = c.filter(function (s) { return !S.lances.some(function (l) { return l.id === s.id; }); })[0];
+      if (S.phase === "pret") {
+        h = '<div class="p-titre">Évaluation : SQL et PHP</div><div class="p-libelle">La séance n\'est pas encore ouverte.</div>';
+      } else if (S.phase === "accueil" || (S.phase === "question" && !d)) {
+        h = '<div class="p-libelle">Ouvre cette adresse, puis tape ton nom, ton prénom et le code de la séance :</div><div class="p-url">' + echapper(D.url) + '</div><div class="p-code">' + joli(E.codes.seance) + "</div>";
+      } else if (S.phase === "question") {
+        h = '<div class="p-titre">Question ' + S.lances.length + " sur " + c.length + '</div><div class="p-libelle">Si la question ne s\'ouvre pas toute seule, tape ce code :</div><div class="p-code">' + joli(E.codes.questions[d.id]) + '</div><div class="p-chrono" id="p-chrono"></div>';
+      } else if (S.phase === "fin") {
+        h = '<div class="p-titre">L\'épreuve est terminée</div><div class="p-libelle">Si ta page ne s\'est pas arrêtée toute seule, tape ce code :</div><div class="p-code">' + joli(E.codes.fin) + '</div><div class="p-libelle">Garde la page ouverte : la correction arrive.</div>';
+      } else if (S.phase === "corr") {
+        h = '<div class="p-titre">La correction</div><div class="p-libelle">Si ton bilan ne s\'affiche pas tout seul, tape ce code :</div><div class="p-code" style="font-size:5rem">' + joli(E.codes.correction) + " " + masque() + "</div>";
+      }
+      if (S.phase === "accueil" || S.phase === "question") {
+        if (prochain) pied += '<button class="bouton grand" type="button" id="p-suivante">' + (d ? "Question suivante" : "Lancer la question 1") + "</button>";
+        if (d) pied += '<button class="bouton ' + (prochain ? "second" : "grand") + '" type="button" id="p-terminer">Terminer l\'épreuve</button>';
+      }
+      if (S.phase === "fin") pied += '<button class="bouton grand" type="button" id="p-corr">Donner la correction</button>';
+      pied += '<button class="bouton second" type="button" id="p-quitter">Quitter la projection (Échap)</button>';
+      $("p-corps").innerHTML = h;
+      $("p-pied").innerHTML = pied;
+      var b;
+      if ((b = $("p-suivante"))) b.onclick = function () { lancerSuivante(prochain); projeter(null, true); };
+      if ((b = $("p-terminer"))) b.onclick = function () { terminer(); projeter(null, true); };
+      if ((b = $("p-corr"))) b.onclick = function () { donnerCorrection(); projeter(null, true); };
+      $("p-quitter").onclick = quitterProjection;
+    }
+    var ch = $("p-chrono");
+    if (ch) {
+      ch.textContent = reste === null ? "" : (reste > 0 ? mmss(reste) : "Temps écoulé");
+      ch.className = "p-chrono" + (reste !== null && reste <= 0 ? " fini" : "");
+    }
+  }
+
+  // ───────── navigation ─────────
+  document.querySelectorAll("#onglets button").forEach(function (b) {
+    b.onclick = function () {
+      panneau = b.getAttribute("data-p");
+      document.querySelectorAll("#onglets button").forEach(function (x) { x.classList.toggle("actif", x === b); });
+      document.querySelectorAll(".panneau").forEach(function (p) { p.classList.toggle("cache", p.id !== "p-" + panneau); });
+      if (panneau === "seance") seance();
+      if (panneau === "resultats") { resultats(); if (S.debut) relever(false); }
+      if (panneau === "secours") secours();
+      if (panneau === "preparer") tableChoix();
+    };
+  });
+  document.querySelectorAll("#raccourcis button").forEach(function (b) {
+    b.onclick = function () {
+      var max = +b.getAttribute("data-tp");
+      S.choix = D.slots.filter(function (s) { return s.tp <= max; }).map(function (s) { return s.id; });
+      sauver(); tableChoix();
+    };
+  });
+
+  function tout() {
+    tableChoix(); seance(); afficherResume(); secours();
+    if (panneau === "resultats") resultats();
+    relevePeriodique();
+  }
+
+  if (!D || !subtle) {
+    document.querySelector("main").innerHTML = '<div class="encadre danger">' + (!subtle ? "Ce navigateur ne permet pas le chiffrement nécessaire : ouvre cette page avec Chrome, Edge ou Firefox, à jour." : "Données absentes : cette page doit être produite par outils/construire-quiz.mjs.") + "</div>";
+    return;
+  }
+  var sel = $("edition");
+  D.editions.forEach(function (e) { var o = document.createElement("option"); o.value = e.ed; o.textContent = e.label; sel.appendChild(o); });
+  var memo = null; try { memo = localStorage.getItem("sio-pilotage-quiz:edition"); } catch (e) {}
+  if (memo && D.editions.some(function (e) { return e.ed === memo; })) sel.value = memo;
+  function choisirEdition() {
+    ed = sel.value; E = D.editions.filter(function (e) { return e.ed === ed; })[0];
+    clePrivee = null; liaisonOk = null;
+    try { localStorage.setItem("sio-pilotage-quiz:edition", ed); } catch (e) {}
+    charger(); tout();
+  }
+  sel.onchange = choisirEdition;
+  choisirEdition();
+})();
+</script>
+</body>
+</html>

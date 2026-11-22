@@ -285,6 +285,22 @@
      "ouverture": "2026-12-11T00:00"
     }
    ]
+  },
+  {
+   "titre": "Évaluation en ligne",
+   "fixe": true,
+   "cache": true,
+   "documents": [
+    {
+     "libelle": "Évaluation : SQL et PHP",
+     "fichier": "quiz/index.html",
+     "ouverture": "2026-11-22T00:00",
+     "clair": true,
+     "annexes": [
+      "quiz/banque.js"
+     ]
+    }
+   ]
   }
  ]
 }

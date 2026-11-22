@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Évaluation : SQL et PHP | BTS SIO, Bloc 1</title>
+<style>
+:root {
+  --fond: #ffffff; --fond-doux: #f5f6f8; --trait: #d3d9e0; --trait-fort: #9aa5b4;
+  --texte: #1d2530; --texte-doux: #4a5563; --texte-pale: #6b7684;
+  --marine: #1f3a5f; --marine-clair: #e8eef6; --or: #b8912a; --lien: #1a4f8b;
+  --vert: #2d6a3e; --vert-clair: #eef6f0; --orange: #8f5400; --orange-clair: #fdf5e6;
+  --rouge: #a12a2a; --rouge-clair: #fbeeee; --code-fond: #f6f7f9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--fond); color: var(--texte); font-family: "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif; font-size: 16px; line-height: 1.55; }
+.entete { background: var(--marine); color: #fff; display: flex; align-items: center; gap: 14px; padding: 0 24px; height: 56px; border-bottom: 3px solid var(--or); }
+.entete .formation { font-size: 0.85rem; opacity: 0.85; white-space: nowrap; }
+.entete .sep { width: 1px; height: 22px; background: rgba(255,255,255,0.35); }
+.entete .bloc { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.entete .eleve { margin-left: auto; font-size: 0.85rem; opacity: 0.9; white-space: nowrap; }
+main { max-width: 800px; margin: 0 auto; padding: 26px 22px 60px; }
+h1 { color: var(--marine); font-size: 1.6rem; border-bottom: 2px solid var(--marine); padding-bottom: 6px; margin-bottom: 18px; }
+h2 { color: var(--marine); font-size: 1.2rem; margin: 22px 0 10px; border-bottom: 1px solid var(--trait); padding-bottom: 3px; }
+p { margin-bottom: 10px; }
+code, .mono { font-family: Consolas, "Cascadia Mono", Menlo, "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+p code, li code, td code, label code, .enonce code { background: var(--code-fond); border: 1px solid #e3e7ec; padding: 0 4px; border-radius: 2px; }
+kbd { font-family: inherit; font-size: 0.85em; border: 1px solid var(--trait-fort); border-bottom-width: 2px; border-radius: 3px; padding: 0 4px; background: #fff; }
+.cadre { border: 1px solid var(--trait); background: #fff; padding: 18px 20px; margin-bottom: 16px; }
+.encadre { border: 1px solid var(--trait); border-left: 5px solid var(--lien); background: var(--marine-clair); padding: 10px 16px; margin: 14px 0; font-size: 0.95rem; }
+.encadre.attention { border-left-color: #c07a0c; background: var(--orange-clair); }
+.encadre.ok { border-left-color: var(--vert); background: var(--vert-clair); }
+.encadre.erreur { border-left-color: var(--rouge); background: var(--rouge-clair); }
+.encadre ul { margin: 4px 0 2px 20px; }
+.champ { margin-bottom: 14px; }
+.champ label { display: block; font-weight: 600; margin-bottom: 4px; }
+.champ input { width: 100%; max-width: 360px; padding: 8px 10px; border: 1px solid var(--trait-fort); border-radius: 2px; font: inherit; }
+input.code { text-transform: uppercase; letter-spacing: 0.18em; font-family: Consolas, Menlo, monospace; font-size: 1.15rem; max-width: 220px; }
+button { font: inherit; cursor: pointer; }
+.bouton { background: var(--marine); color: #fff; border: 1px solid var(--marine); padding: 8px 20px; border-radius: 2px; font-weight: 600; }
+.bouton:hover { background: #16304f; }
+.bouton:disabled { background: #9aa5b4; border-color: #9aa5b4; cursor: default; }
+.bouton.second { background: #fff; color: var(--marine); }
+.message { margin-top: 10px; font-size: 0.95rem; min-height: 1.4em; }
+.message.erreur { color: var(--rouge); font-weight: 600; }
+.message.ok { color: var(--vert); font-weight: 600; }
+.discret { font-size: 0.85rem; color: var(--texte-pale); }
+.cache { display: none !important; }
+
+/* La question */
+.q-tete { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--trait); padding-bottom: 8px; margin-bottom: 14px; }
+.q-tete .num { font-size: 1.25rem; font-weight: 700; color: var(--marine); }
+.etiquette { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; border: 1px solid var(--trait-fort); color: var(--texte-doux); padding: 0 6px; border-radius: 2px; }
+.chrono { margin-left: auto; font-family: Consolas, Menlo, monospace; font-size: 1.5rem; font-weight: 700; color: var(--marine); }
+.chrono.bientot { color: var(--orange); }
+.chrono.fin { color: var(--rouge); }
+.barre { height: 6px; background: var(--fond-doux); border: 1px solid var(--trait); margin-bottom: 16px; }
+.barre div { height: 100%; background: var(--marine); width: 100%; }
+.barre.bientot div { background: #c07a0c; }
+.barre.fin div { background: var(--rouge); }
+.enonce { font-size: 1.05rem; margin-bottom: 12px; }
+pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-left: 4px solid var(--marine); padding: 10px 14px; margin: 0 0 14px; overflow-x: auto; font-family: Consolas, Menlo, monospace; font-size: 0.9rem; line-height: 1.45; white-space: pre; }
+table.donnees { border-collapse: collapse; margin: 0 0 14px; font-size: 0.88rem; }
+table.donnees th, table.donnees td { border: 1px solid var(--trait); padding: 3px 9px; text-align: left; }
+table.donnees th { background: var(--marine-clair); color: var(--marine); }
+table.donnees caption { caption-side: top; text-align: left; font-size: 0.85rem; color: var(--texte-doux); padding-bottom: 3px; }
+.choix { list-style: none; margin: 0 0 16px; }
+.choix li { margin-bottom: 8px; }
+.choix label { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--trait); padding: 9px 12px; cursor: pointer; background: #fff; }
+.choix label:hover { border-color: var(--trait-fort); background: var(--fond-doux); }
+.choix input { margin-top: 5px; flex: none; }
+.choix .lettre { font-weight: 700; color: var(--marine); flex: none; min-width: 1.2em; }
+.choix .texte.mono { font-family: Consolas, Menlo, monospace; font-size: 0.9rem; word-break: break-word; }
+.choix label.coche { border-color: var(--marine); background: var(--marine-clair); }
+
+/* Bilan */
+.note { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.note .valeur { font-size: 2.2rem; font-weight: 700; color: var(--marine); }
+table.recap { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 0.92rem; }
+table.recap th, table.recap td { border: 1px solid var(--trait); padding: 5px 9px; text-align: left; vertical-align: top; }
+table.recap th { background: var(--fond-doux); color: var(--marine); }
+.res-ok { color: var(--vert); font-weight: 700; }
+.res-non { color: var(--rouge); font-weight: 700; }
+.res-vide { color: var(--orange); font-weight: 700; }
+details.detail { border: 1px solid var(--trait); margin-bottom: 10px; background: #fff; }
+details.detail summary { cursor: pointer; padding: 8px 12px; font-weight: 600; background: var(--fond-doux); }
+details.detail .corps { padding: 10px 14px; }
+.choix.revue li { border: 1px solid var(--trait); padding: 6px 10px; margin-bottom: 6px; display: flex; gap: 10px; }
+.choix.revue li.bonne { border-color: #9cc6a8; background: var(--vert-clair); }
+.choix.revue li.mauvaise { border-color: #e2a9a9; background: var(--rouge-clair); }
+.choix.revue .marque { margin-left: auto; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+.explication { border-left: 4px solid var(--vert); background: var(--vert-clair); padding: 6px 12px; font-size: 0.95rem; }
+ul.axes { margin: 6px 0 10px 22px; }
+ul.axes li { margin-bottom: 8px; }
+textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monospace; font-size: 0.75rem; padding: 6px; border: 1px solid var(--trait-fort); word-break: break-all; }
+.alerte-sortie { position: fixed; bottom: 0; left: 0; right: 0; background: var(--orange-clair); border-top: 2px solid #c07a0c; color: var(--orange); text-align: center; padding: 6px; font-weight: 600; font-size: 0.9rem; }
+@media print {
+  .entete, .sans-impression, .alerte-sortie { display: none !important; }
+  main { padding: 0; max-width: none; }
+  details.detail { break-inside: avoid; }
+  details.detail:not([open]) .corps { display: block; }
+}
+</style>
+</head>
+<body>
+<header class="entete">
+  <span class="formation">BTS SIO 1<sup>re</sup> année</span>
+  <span class="sep"></span>
+  <span class="bloc">Bloc 1 : Développement web</span>
+  <span class="eleve" id="nom-eleve"></span>
+</header>
+<main>
+<h1>Évaluation : SQL et PHP</h1>
+
+<noscript><div class="encadre erreur">Cette page a besoin de JavaScript : active-le dans ton navigateur.</div></noscript>
+
+<!-- Accueil -->
+<section id="ecran-accueil" class="cache">
+  <div class="encadre">
+    <p><strong>Comment se passe l'évaluation</strong></p>
+    <ul>
+      <li>Chaque question s'ouvre quand le professeur la lance. Si elle ne s'ouvre pas toute seule, tape le code affiché au tableau.</li>
+      <li>Le temps de chaque question est limité. À la fin du temps, la réponse cochée est enregistrée.</li>
+      <li>Une réponse validée ne peut plus être modifiée.</li>
+      <li>Reste sur cette page jusqu'à la fin : chaque sortie de la page pendant une question est notée.</li>
+      <li>Les questions portent sur les TP. Chacun a ses propres questions : inutile de regarder l'écran du voisin.</li>
+    </ul>
+  </div>
+  <form id="form-accueil" class="cadre" autocomplete="off">
+    <div class="champ"><label for="nom">Nom</label><input id="nom" required maxlength="40"></div>
+    <div class="champ"><label for="prenom">Prénom</label><input id="prenom" required maxlength="40"></div>
+    <div class="champ"><label for="code-seance">Code de la séance</label><input id="code-seance" class="code" required maxlength="9" spellcheck="false"></div>
+    <button class="bouton" type="submit" id="btn-accueil">Commencer</button>
+    <div class="message" id="msg-accueil"></div>
+  </form>
+</section>
+
+<!-- Attente d'une question -->
+<section id="ecran-attente" class="cache">
+  <div class="cadre">
+    <p id="attente-retour" class="message"></p>
+    <p><strong id="attente-titre">En attente de la première question.</strong></p>
+    <p class="discret" id="attente-progression"></p>
+    <form id="form-code" autocomplete="off">
+      <div class="champ"><label for="code-question">Code affiché au tableau</label><input id="code-question" class="code" maxlength="9" spellcheck="false"></div>
+      <button class="bouton" type="submit" id="btn-code">Ouvrir</button>
+      <div class="message" id="msg-code"></div>
+    </form>
+  </div>
+  <p class="discret" id="liaison"></p>
+</section>
+
+<!-- Une question -->
+<section id="ecran-question" class="cache">
+  <div class="cadre">
+    <div class="q-tete"><span class="num" id="q-num"></span><span class="etiquette" id="q-tag"></span><span class="chrono" id="q-chrono"></span></div>
+    <div class="barre" id="q-barre"><div></div></div>
+    <div class="enonce" id="q-enonce"></div>
+    <div id="q-code"></div>
+    <div id="q-table"></div>
+    <ul class="choix" id="q-choix"></ul>
+    <button class="bouton" type="button" id="btn-valider" disabled>Valider ma réponse</button>
+    <span class="discret" style="margin-left:12px">À la fin du temps, la réponse cochée est enregistrée.</span>
+  </div>
+</section>
+
+<!-- Fin de l'épreuve -->
+<section id="ecran-fin" class="cache">
+  <div class="cadre">
+    <p><strong>L'épreuve est terminée.</strong></p>
+    <div id="fin-envoi" class="encadre"></div>
+    <form id="form-corr" autocomplete="off">
+      <p>Le professeur donnera ensuite un code pour afficher ta correction et ton bilan.</p>
+      <div class="champ"><label for="code-corr">Code de la correction</label><input id="code-corr" class="code" maxlength="14" spellcheck="false"></div>
+      <button class="bouton" type="submit" id="btn-corr">Afficher mon bilan</button>
+      <div class="message" id="msg-corr"></div>
+    </form>
+  </div>
+  <details class="detail sans-impression" id="bloc-remise">
+    <summary>Code de remise de ma copie (seulement si le professeur le demande)</summary>
+    <div class="corps">
+      <p class="discret">Ce texte contient ta copie, chiffrée. Copie-le en entier et envoie-le au professeur s'il te le demande.</p>
+      <textarea class="remise" id="remise" readonly></textarea>
+      <p><button class="bouton second" type="button" id="btn-copier">Copier</button> <button class="bouton second" type="button" id="btn-renvoyer">Renvoyer ma copie</button> <span class="message" id="msg-remise"></span></p>
+    </div>
+  </details>
+</section>
+
+<!-- Bilan -->
+<section id="ecran-bilan" class="cache"></section>
+
+<p class="discret sans-impression" id="pied"></p>
+</main>
+<div class="alerte-sortie cache" id="alerte-sortie"></div>
+
+<script src="banque.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var BANQUE = window.BANQUE_QUIZ;
+  var STOCKAGE = "sio-quiz-sql-php";
+  var subtle = window.crypto && window.crypto.subtle;
+  var TABLE = [
+    [1, "mdurand", "Martin", "Durand", "Informatique", "admin"],
+    [2, "jmoreau", "Julie", "Moreau", "Accueil", "salarie"],
+    [3, "kbenali", "Karim", "Benali", "Comptabilité", "salarie"],
+    [4, "lpetit", "Lucas", "Petit", "Technique", "salarie"],
+    [5, "sgarcia", "Sofia", "Garcia", "Technique", "salarie"],
+    [6, "tleroy", "Thomas", "Leroy", "Technique", "salarie"],
+    [7, "cfontaine", "Camille", "Fontaine", "Commercial", "salarie"],
+    [8, "nrousseau", "Nadia", "Rousseau", "Commercial", "salarie"]
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var etat = null;          // tout ce qui doit survivre à un rechargement de la page
+  var minuteur = null;
+  var dehors = false;
+  var occupe = false;       // une vérification de code est en cours
+  var enAttente = null;     // code reçu par la liaison pendant une question ouverte
+  var source = null;        // liaison avec le poste du professeur
+
+  // ───────── outils ─────────
+  function echapper(t) {
+    return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function sansAccents(t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function normNom(t) { return sansAccents(String(t)).toLowerCase().replace(/[^a-z]/g, ""); }
+  function joliNom(t) { return String(t).trim().replace(/\s+/g, " "); }
+  function normCode(t) { return sansAccents(String(t)).toUpperCase().replace(/[^A-Z0-9]/g, ""); }
+  function versOctets(b) { var s = atob(b), o = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) o[i] = s.charCodeAt(i); return o; }
+  function versB64(buf) { var o = new Uint8Array(buf), s = ""; for (var i = 0; i < o.length; i++) s += String.fromCharCode(o[i]); return btoa(s); }
+  function sauver() { try { localStorage.setItem(STOCKAGE, JSON.stringify(etat)); } catch (e) {} }
+  function charger() { try { return JSON.parse(localStorage.getItem(STOCKAGE) || "null"); } catch (e) { return null; } }
+  function montrer(nom) {
+    ["accueil", "attente", "question", "fin", "bilan"].forEach(function (n) {
+      $("ecran-" + n).classList.toggle("cache", n !== nom);
+    });
+    window.scrollTo(0, 0);
+  }
+  function message(id, texte, genre) { var m = $(id); m.textContent = texte || ""; m.className = "message" + (genre ? " " + genre : ""); }
+
+  function ouvrirBoite(boite, code) {
+    return subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveKey"])
+      .then(function (base) {
+        return subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: versOctets(boite.s), iterations: BANQUE.iter },
+          base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+      })
+      .then(function (k) { return subtle.decrypt({ name: "AES-GCM", iv: versOctets(boite.i) }, k, versOctets(boite.d)); })
+      .then(function (clair) { return JSON.parse(new TextDecoder().decode(clair)); })
+      .catch(function () { return null; });
+  }
+
+  // Tirage propre à chaque élève : même nom, même séance, mêmes questions.
+  function tirage(cleTexte) {
+    return subtle.digest("SHA-256", new TextEncoder().encode(cleTexte)).then(function (h) {
+      var o = new Uint8Array(h);
+      var a = ((o[0] << 24) | (o[1] << 16) | (o[2] << 8) | o[3]) >>> 0;
+      return function () {           // mulberry32
+        a = (a + 0x6D2B79F5) >>> 0;
+        var t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    });
+  }
+
+  function slotParId(id) { return etat.hdr.slots.filter(function (s) { return s.id === id; })[0]; }
+  function slotParSeq(n) { return etat.hdr.slots.filter(function (s) { return s.seq === n; })[0]; }
+  function nbOuvertes() { return Object.keys(etat.rep).length; }
+
+  // ───────── liaison (ntfy.sh) ─────────
+  function chiffrerPourProf(objet) {
+    var pub, eph;
+    return subtle.importKey("jwk", etat.hdr.pub, { name: "ECDH", namedCurve: "P-256" }, false, [])
+      .then(function (k) { pub = k; return subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveKey"]); })
+      .then(function (p) { eph = p; return subtle.deriveKey({ name: "ECDH", public: pub }, p.privateKey, { name: "AES-GCM", length: 256 }, false, ["encrypt"]); })
+      .then(function (k) {
+        var iv = crypto.getRandomValues(new Uint8Array(12));
+        return Promise.all([
+          subtle.exportKey("raw", eph.publicKey),
+          subtle.encrypt({ name: "AES-GCM", iv: iv }, k, new TextEncoder().encode(JSON.stringify(objet))),
+          iv
+        ]);
+      })
+      .then(function (r) { return "SIO1." + btoa(JSON.stringify({ e: versB64(r[0]), i: versB64(r[2]), d: versB64(r[1]) })); });
+  }
+
+  function publier(texte) {
+    if (!window.fetch) return Promise.reject(new Error("fetch"));
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctrl) ctrl.abort(); }, 12000);
+    return fetch(etat.hdr.ntfy + "/" + etat.hdr.res, { method: "POST", body: texte, signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { clearTimeout(t); if (!r.ok) throw new Error("HTTP " + r.status); return true; });
+  }
+
+  function etatLiaison(actif) {
+    $("liaison").textContent = actif
+      ? "Liaison avec le poste du professeur : active. Les questions s'ouvriront toutes seules."
+      : "Liaison automatique indisponible : tape le code affiché au tableau.";
+  }
+
+  function demarrerLiaison() {
+    if (source || !window.EventSource || etat.bilan) return;
+    try {
+      source = new EventSource(etat.hdr.ntfy + "/" + etat.hdr.ctrl + "/sse");
+    } catch (e) { etatLiaison(false); return; }
+    source.onopen = function () { etatLiaison(true); };
+    source.onerror = function () { etatLiaison(false); };
+    source.onmessage = function (ev) {
+      var m;
+      try { var d = JSON.parse(ev.data); if (d.event && d.event !== "message") return; m = JSON.parse(d.message); } catch (e) { return; }
+      if (!m || !m.k || !m.c) return;
+      recevoir(m);
+    };
+  }
+
+  function recevoir(m) {
+    if (etat.courante || occupe) { enAttente = m; return; }
+    if (m.k === "q" && !etat.fin) {
+      var s = slotParSeq(m.n);
+      if (!s || s.seq <= etat.seq) return;
+      occupe = true;
+      ouvrirBoite(BANQUE.editions[etat.ix].q[s.id], normCode(m.c)).then(function (charge) {
+        occupe = false;
+        if (charge) ouvrirQuestion(s, charge); else traiterAttente();
+      });
+    } else if (m.k === "fin" && !etat.fin) {
+      verifierFin(normCode(m.c)).then(function (ok) { if (ok) terminer(); });
+    } else if (m.k === "corr" && etat.fin && !etat.bilan) {
+      appliquerCorrection(m.c, true);
+    }
+  }
+
+  function traiterAttente() {
+    if (!enAttente) return;
+    var m = enAttente; enAttente = null;
+    recevoir(m);
+  }
+
+  // ───────── accueil ─────────
+  $("form-accueil").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (occupe) return;
+    var nom = joliNom($("nom").value), prenom = joliNom($("prenom").value), code = normCode($("code-seance").value);
+    if (!normNom(nom) || !normNom(prenom)) { message("msg-accueil", "Indique ton nom et ton prénom.", "erreur"); return; }
+    if (code.length < 6) { message("msg-accueil", "Le code de la séance a 6 caractères.", "erreur"); return; }
+    occupe = true;
+    $("btn-accueil").disabled = true;
+    message("msg-accueil", "Vérification du code...");
+    var essais = [];
+    BANQUE.editions.forEach(function (e, ix) { essais.push([ix, e.a]); essais.push([ix, e.b]); });
+    (function suivant(n) {
+      if (n >= essais.length) {
+        occupe = false; $("btn-accueil").disabled = false;
+        message("msg-accueil", "Code de séance non reconnu. Vérifie le code affiché au tableau.", "erreur");
+        return;
+      }
+      ouvrirBoite(essais[n][1], code).then(function (hdr) {
+        if (!hdr) { suivant(n + 1); return; }
+        occupe = false; $("btn-accueil").disabled = false;
+        etat = { v: 1, ix: essais[n][0], hdr: hdr, nom: nom, prenom: prenom, debut: Date.now(), seq: 0, rep: {}, sujets: {}, courante: null, fin: false, envoye: false, remise: "", bilan: null };
+        sauver();
+        message("msg-accueil", "");
+        afficherNom();
+        chiffrerPourProf({ k: "join", ed: hdr.ed, nom: nom, prenom: prenom, mult: hdr.mult, t: Date.now() })
+          .then(publier).catch(function () {});
+        demarrerLiaison();
+        allerAttente("");
+      });
+    })(0);
+  });
+
+  function afficherNom() {
+    $("nom-eleve").textContent = etat ? etat.prenom + " " + etat.nom.toUpperCase() : "";
+    $("pied").textContent = etat ? "Séance : " + etat.hdr.label + (etat.hdr.mult > 1 ? " (temps majoré)" : "") : "";
+  }
+
+  // ───────── attente et codes ─────────
+  function allerAttente(retour, genre) {
+    montrer("attente");
+    message("attente-retour", retour, genre);
+    var n = nbOuvertes();
+    $("attente-titre").textContent = n === 0 ? "En attente de la première question." : "En attente de la question suivante.";
+    $("attente-progression").textContent = n === 0 ? "" : "Questions déjà traitées : " + n + ".";
+    $("code-question").value = "";
+    message("msg-code", "");
+    etatLiaison(source && source.readyState === 1);
+    if (!window.EventSource) etatLiaison(false);
+    setTimeout(traiterAttente, 50);
+  }
+
+  function verifierFin(code) {
+    return ouvrirBoite(BANQUE.editions[etat.ix].f, code).then(function (r) { return !!(r && r.fin); });
+  }
+
+  $("form-code").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (occupe) return;
+    var code = normCode($("code-question").value);
+    if (code.length < 6) { message("msg-code", "Le code a 6 caractères.", "erreur"); return; }
+    occupe = true;
+    $("btn-code").disabled = true;
+    message("msg-code", "Vérification du code...");
+    var restants = etat.hdr.slots.filter(function (s) { return s.seq > etat.seq; }).sort(function (a, b) { return a.seq - b.seq; });
+    var essais = restants.slice(0, 1).map(function (s) { return ["q", s]; });
+    essais.push(["fin"]);
+    restants.slice(1).forEach(function (s) { essais.push(["q", s]); });
+    (function suivant(n) {
+      if (n >= essais.length) {
+        occupe = false; $("btn-code").disabled = false;
+        message("msg-code", "Code non reconnu. Vérifie le code affiché au tableau. (Une question déjà passée ne peut plus être ouverte.)", "erreur");
+        return;
+      }
+      if (essais[n][0] === "fin") {
+        verifierFin(code).then(function (ok) {
+          if (!ok) { suivant(n + 1); return; }
+          occupe = false; $("btn-code").disabled = false;
+          terminer();
+        });
+        return;
+      }
+      var s = essais[n][1];
+      ouvrirBoite(BANQUE.editions[etat.ix].q[s.id], code).then(function (charge) {
+        if (!charge) { suivant(n + 1); return; }
+        occupe = false; $("btn-code").disabled = false;
+        ouvrirQuestion(s, charge);
+      });
+    })(0);
+  });
+
+  // ───────── la question ─────────
+  function ouvrirQuestion(s, charge) {
+    if (etat.fin || s.seq <= etat.seq) return;
+    tirage(etat.hdr.ed + "|" + normNom(etat.nom) + "|" + normNom(etat.prenom) + "|" + s.id).then(function (alea) {
+      var v = Math.floor(alea() * charge.variants.length);
+      var n = charge.variants[v].o.length, perm = [];
+      for (var i = 0; i < n; i++) perm.push(i);
+      for (var j = n - 1; j > 0; j--) { var k = Math.floor(alea() * (j + 1)); var x = perm[j]; perm[j] = perm[k]; perm[k] = x; }
+      var maintenant = Date.now();
+      etat.seq = s.seq;
+      etat.sujets[s.id] = charge;
+      etat.rep[s.id] = { v: v, perm: perm, num: nbOuvertes() + 1, ouv: maintenant, lim: maintenant + Math.round(s.duree * etat.hdr.mult * 1000), choix: -1, val: 0, statut: "ouverte", sorties: 0 };
+      etat.courante = s.id;
+      sauver();
+      afficherQuestion();
+    });
+  }
+
+  function tableHTML() {
+    var h = '<table class="donnees"><caption>Table utilisateurs (colonne mot_de_passe non affichée)</caption><tr><th>id</th><th>identifiant</th><th>prenom</th><th>nom</th><th>service</th><th>role</th></tr>';
+    TABLE.forEach(function (l) { h += "<tr>" + l.map(function (c) { return "<td>" + echapper(c) + "</td>"; }).join("") + "</tr>"; });
+    return h + "</table>";
+  }
+
+  function afficherQuestion() {
+    var id = etat.courante, r = etat.rep[id], s = slotParId(id), sujet = etat.sujets[id].variants[r.v];
+    montrer("question");
+    $("q-num").textContent = "Question " + r.num;
+    $("q-tag").textContent = s.tag;
+    $("q-enonce").innerHTML = sujet.q;
+    $("q-code").innerHTML = sujet.code ? '<pre class="bloc">' + echapper(sujet.code) + "</pre>" : "";
+    $("q-table").innerHTML = sujet.table ? tableHTML() : "";
+    var liste = $("q-choix");
+    liste.innerHTML = "";
+    r.perm.forEach(function (orig, pos) {
+      var li = document.createElement("li");
+      li.innerHTML = '<label><input type="radio" name="reponse" value="' + orig + '"><span class="lettre">' + "ABCDEF"[pos] + '.</span><span class="texte' + (sujet.oc ? " mono" : "") + '">' + sujet.o[orig] + "</span></label>";
+      var input = li.querySelector("input");
+      if (r.choix === orig) { input.checked = true; li.querySelector("label").classList.add("coche"); }
+      input.addEventListener("change", function () {
+        r.choix = orig; sauver();
+        liste.querySelectorAll("label").forEach(function (l) { l.classList.remove("coche"); });
+        li.querySelector("label").classList.add("coche");
+        $("btn-valider").disabled = false;
+      });
+      liste.appendChild(li);
+    });
+    $("btn-valider").disabled = r.choix < 0;
+    clearInterval(minuteur);
+    minuteur = setInterval(tic, 250);
+    tic();
+  }
+
+  function tic() {
+    var id = etat && etat.courante;
+    if (!id) { clearInterval(minuteur); return; }
+    var r = etat.rep[id], total = r.lim - r.ouv, reste = r.lim - Date.now();
+    if (reste <= 0) { fermerQuestion("expiree"); return; }
+    var sec = Math.ceil(reste / 1000);
+    var chrono = $("q-chrono"), barre = $("q-barre");
+    chrono.textContent = Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(-2);
+    var genre = sec <= 5 ? "fin" : (sec <= 15 ? "bientot" : "");
+    chrono.className = "chrono" + (genre ? " " + genre : "");
+    barre.className = "barre" + (genre ? " " + genre : "");
+    barre.firstChild.style.width = Math.max(0, 100 * reste / total) + "%";
+  }
+
+  $("btn-valider").addEventListener("click", function () {
+    if (!etat.courante || etat.rep[etat.courante].choix < 0) return;
+    fermerQuestion("validee");
+  });
+
+  function fermerQuestion(statut) {
+    var id = etat.courante;
+    if (!id) return;
+    var r = etat.rep[id];
+    clearInterval(minuteur);
+    r.statut = statut;
+    r.val = Math.min(Date.now(), r.lim);
+    etat.courante = null;
+    sauver();
+    if (statut === "validee") allerAttente("Réponse enregistrée.", "ok");
+    else if (r.choix >= 0) allerAttente("Temps écoulé : la réponse cochée a été enregistrée.", "ok");
+    else allerAttente("Temps écoulé : aucune réponse n'a été cochée pour cette question.", "erreur");
+  }
+
+  // Sorties de la page pendant une question
+  function sortie() {
+    if (dehors) return;
+    dehors = true;
+    if (etat && etat.courante) {
+      var r = etat.rep[etat.courante];
+      r.sorties++;
+      sauver();
+      var a = $("alerte-sortie");
+      a.textContent = "Sortie de la page notée pendant la question (" + r.sorties + "). Reste sur cette page.";
+      a.classList.remove("cache");
+      setTimeout(function () { a.classList.add("cache"); }, 6000);
+    }
+  }
+  function retour() { dehors = false; }
+  document.addEventListener("visibilitychange", function () { if (document.hidden) sortie(); else retour(); });
+  window.addEventListener("blur", sortie);
+  window.addEventListener("focus", retour);
+
+  // ───────── fin et remise de la copie ─────────
+  function terminer() {
+    if (etat.courante) {
+      var r = etat.rep[etat.courante];
+      clearInterval(minuteur);
+      r.statut = "expiree";
+      r.val = Math.min(Date.now(), r.lim);
+      etat.courante = null;
+    }
+    etat.fin = true;
+    sauver();
+    preparerCopie().then(function () { afficherFin(); envoyerCopie(); });
+  }
+
+  function preparerCopie() {
+    if (etat.remise) return Promise.resolve();
+    var lignes = Object.keys(etat.rep).map(function (id) {
+      var r = etat.rep[id];
+      return [id, r.v, r.choix, Math.max(0, (r.val || r.lim) - r.ouv), r.sorties, r.statut === "validee" ? "v" : "e"];
+    });
+    return chiffrerPourProf({ k: "copie", ed: etat.hdr.ed, nom: etat.nom, prenom: etat.prenom, mult: etat.hdr.mult, debut: etat.debut, t: Date.now(), r: lignes })
+      .then(function (texte) { etat.remise = texte; sauver(); });
+  }
+
+  function afficherFin() {
+    montrer("fin");
+    $("remise").value = etat.remise;
+    var b = $("fin-envoi");
+    if (etat.envoye) {
+      b.className = "encadre ok";
+      b.textContent = "Ta copie a été remise au professeur. Tu peux attendre la correction sans fermer cette page.";
+    } else {
+      b.className = "encadre attention";
+      b.textContent = "Remise de ta copie en cours...";
+    }
+  }
+
+  function envoyerCopie() {
+    publier(etat.remise).then(function () {
+      etat.envoye = true; sauver(); if (!etat.bilan) afficherFin();
+      message("msg-remise", "Copie renvoyée.", "ok");
+    }).catch(function () {
+      if (etat.envoye) return;
+      var b = $("fin-envoi");
+      b.className = "encadre erreur";
+      b.innerHTML = "La remise automatique n'a pas fonctionné. <strong>Préviens le professeur</strong> : il te demandera peut-être d'ouvrir le cadre « Code de remise » plus bas et de lui envoyer ce code. Ta copie est conservée sur cette page.";
+      $("bloc-remise").open = true;
+    });
+  }
+
+  $("btn-renvoyer").addEventListener("click", function () { message("msg-remise", "Envoi..."); envoyerCopie(); });
+  $("btn-copier").addEventListener("click", function () {
+    var t = $("remise");
+    t.select();
+    var fait = function () { message("msg-remise", "Copié.", "ok"); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t.value).then(fait, function () {});
+    else { try { document.execCommand("copy"); fait(); } catch (e) {} }
+  });
+
+  // ───────── correction et bilan ─────────
+  $("form-corr").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    appliquerCorrection($("code-corr").value, false);
+  });
+
+  function appliquerCorrection(saisie, auto) {
+    if (occupe) return;
+    var brut = normCode(saisie), code = brut.slice(0, 6), masque = brut.slice(6);
+    if (code.length < 6) { if (!auto) message("msg-corr", "Le code a au moins 6 caractères.", "erreur"); return; }
+    occupe = true;
+    if (!auto) message("msg-corr", "Vérification du code...");
+    ouvrirBoite(BANQUE.editions[etat.ix].c, code).then(function (corr) {
+      occupe = false;
+      if (!corr) { if (!auto) message("msg-corr", "Code non reconnu.", "erreur"); return; }
+      var lances = null;
+      if (/^[0-9A-F]{1,8}$/.test(masque)) {
+        var bits = parseInt(masque, 16);
+        lances = etat.hdr.slots.filter(function (s) { return bits & (1 << (s.seq - 1)); }).map(function (s) { return s.id; });
+      }
+      if (!lances || !lances.length) lances = Object.keys(etat.rep);
+      etat.bilan = { corr: corr, lances: lances };
+      sauver();
+      if (source) { source.close(); source = null; }
+      afficherBilan();
+    });
+  }
+
+  function afficherBilan() {
+    var corr = etat.bilan.corr, lances = etat.bilan.lances.slice();
+    lances.sort(function (a, b) { return slotParId(a).seq - slotParId(b).seq; });
+    var bonnes = 0, lignes = [], parTp = {}, aRevoir = [], acquis = [];
+    lances.forEach(function (id, i) {
+      var s = slotParId(id), c = corr.slots[id], r = etat.rep[id];
+      var sujet = r && etat.sujets[id] ? etat.sujets[id].variants[r.v] : null;
+      var ok = !!(r && r.choix >= 0 && r.choix === c.ok[r.v]);
+      var vide = !r || r.choix < 0;
+      if (ok) bonnes++;
+      parTp[c.tp] = parTp[c.tp] || [0, 0];
+      parTp[c.tp][1]++;
+      if (ok) parTp[c.tp][0]++;
+      (ok ? acquis : aRevoir).push(c);
+      lignes.push({ n: i + 1, s: s, c: c, r: r, sujet: sujet, ok: ok, vide: vide });
+    });
+    var total = lances.length;
+    var note = total ? Math.round(bonnes / total * 40) / 2 : 0;
+    var noteTexte = String(note).replace(".", ",");
+
+    var h = '<div class="cadre"><div class="note"><span class="valeur">' + noteTexte + " / 20</span><span>" + bonnes + " bonne" + (bonnes > 1 ? "s" : "") + " réponse" + (bonnes > 1 ? "s" : "") + " sur " + total + " question" + (total > 1 ? "s" : "") + "</span></div>";
+    h += '<p class="discret">' + echapper(etat.prenom + " " + etat.nom.toUpperCase()) + ", " + echapper(etat.hdr.label) + ". Note indicative : seule la note relevée par le professeur fait foi.</p>";
+    h += '<p class="sans-impression"><button class="bouton second" type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button></p></div>';
+
+    h += "<h2>Résultat par TP</h2><table class=\"recap\"><tr><th>TP</th><th>Bonnes réponses</th></tr>";
+    Object.keys(parTp).sort(function (a, b) { return a - b; }).forEach(function (tp) {
+      h += "<tr><td>TP " + tp + (tp === "10" ? " : SQL dans phpMyAdmin" : tp === "11" ? " : PHP lit la base" : tp === "12" ? " : le formulaire de connexion" : " : sessions et administration") + "</td><td>" + parTp[tp][0] + " / " + parTp[tp][1] + "</td></tr>";
+    });
+    h += "</table>";
+
+    h += "<h2>Tes axes de travail</h2>";
+    if (!aRevoir.length) {
+      h += '<div class="encadre ok">Toutes les notions évaluées sont acquises. Pour aller plus loin : les parties de niveau 2 et 3 des TP.</div>';
+    } else {
+      h += "<p>À retravailler, dans l'ordre :</p><ul class=\"axes\">";
+      aRevoir.forEach(function (c) { h += "<li><strong>" + echapper(c.theme) + ".</strong> " + echapper(c.axe) + ' <span class="discret">(' + echapper(c.ref) + ")</span></li>"; });
+      h += "</ul>";
+    }
+    if (acquis.length) {
+      h += "<p>Acquis : " + acquis.map(function (c) { return echapper(c.theme); }).join(" ; ") + ".</p>";
+    }
+
+    h += "<h2>Le détail des questions</h2><table class=\"recap\"><tr><th>N°</th><th>Thème</th><th>Résultat</th></tr>";
+    lignes.forEach(function (l) {
+      h += "<tr><td>" + l.n + "</td><td>" + echapper(l.c.theme) + "</td><td>" + (l.ok ? '<span class="res-ok">Réussie</span>' : (l.vide ? '<span class="res-vide">Sans réponse</span>' : '<span class="res-non">À revoir</span>')) + "</td></tr>";
+    });
+    h += "</table>";
+
+    lignes.forEach(function (l) {
+      h += '<details class="detail"' + (l.ok ? "" : " open") + "><summary>Question " + l.n + " : " + echapper(l.c.theme) + " (" + (l.ok ? "réussie" : (l.vide ? "sans réponse" : "à revoir")) + ")</summary><div class=\"corps\">";
+      if (!l.sujet) {
+        h += "<p>Tu n'as pas ouvert cette question.</p>";
+      } else {
+        h += '<div class="enonce">' + l.sujet.q + "</div>";
+        if (l.sujet.code) h += '<pre class="bloc">' + echapper(l.sujet.code) + "</pre>";
+        if (l.sujet.table) h += tableHTML();
+        var bonne = l.c.ok[l.r.v];
+        h += '<ul class="choix revue">';
+        l.r.perm.forEach(function (orig, pos) {
+          var cls = orig === bonne ? "bonne" : (orig === l.r.choix ? "mauvaise" : "");
+          var marque = orig === bonne ? (orig === l.r.choix ? "ta réponse, juste" : "bonne réponse") : (orig === l.r.choix ? "ta réponse" : "");
+          h += '<li class="' + cls + '"><span class="lettre">' + "ABCDEF"[pos] + '.</span><span class="texte' + (l.sujet.oc ? " mono" : "") + '">' + l.sujet.o[orig] + '</span><span class="marque">' + marque + "</span></li>";
+        });
+        h += "</ul>";
+        if (l.c.ex[l.r.v]) h += '<p class="explication">' + l.c.ex[l.r.v] + "</p>";
+      }
+      h += "</div></details>";
+    });
+    $("ecran-bilan").innerHTML = h;
+    montrer("bilan");
+  }
+
+  // ───────── démarrage ─────────
+  if (!BANQUE || !subtle) {
+    document.querySelector("main").insertAdjacentHTML("beforeend", '<div class="encadre erreur">' + (!subtle
+      ? "Ce navigateur ne permet pas de passer l'évaluation. Utilise une version récente de Chrome, Edge, Firefox ou Safari, à l'adresse https."
+      : "Le sujet n'est pas disponible pour le moment.") + "</div>");
+    return;
+  }
+  etat = charger();
+  if (etat && (!etat.hdr || etat.v !== 1 || !BANQUE.editions[etat.ix] || !etat.hdr.slots)) etat = null;
+  if (!etat) { montrer("accueil"); return; }
+  afficherNom();
+  if (etat.bilan) { afficherBilan(); return; }
+  if (etat.fin) {
+    afficherFin();
+    if (!etat.envoye) envoyerCopie();
+    demarrerLiaison();
+    return;
+  }
+  demarrerLiaison();
+  if (etat.courante) {
+    var r = etat.rep[etat.courante];
+    if (Date.now() >= r.lim) { fermerQuestion("expiree"); return; }
+    afficherQuestion();
+    return;
+  }
+  allerAttente("");
+})();
+</script>
+</body>
+</html>
