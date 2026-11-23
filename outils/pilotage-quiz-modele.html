@@ -166,12 +166,12 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
   </ol>
   <h2>Pendant l'épreuve</h2>
   <ol>
-    <li>Onglet 2, <strong>Ouvrir la séance</strong>, puis <strong>Projection</strong> : les élèves voient l'adresse et le code de la séance. Ils tapent leur nom, leur prénom et ce code. La liste des présents se remplit quand la liaison fonctionne.</li>
-    <li>Un élève qui a droit à un temps majoré reçoit, en aparté, le <strong>code de séance à temps majoré</strong> (onglet 2) à la place du code normal : toutes ses questions durent un tiers de plus.</li>
-    <li><strong>Lancer la question 1</strong> : la question s'ouvre seule chez les élèves si la liaison fonctionne ; sinon ils tapent le code projeté. Chaque élève reçoit, à ce rang, un thème différent de ses voisins. Le temps de chaque élève part de l'ouverture chez lui.</li>
-    <li>Quand le chrono est écoulé, <strong>Question suivante</strong>. Le chrono suit la question la plus longue tombée à ce rang chez les élèves connectés. Un élève qui n'a pas ouvert une question à temps ne peut plus l'ouvrir ensuite : elle compte zéro.</li>
-    <li>Après la dernière question, <strong>Terminer l'épreuve</strong> : les copies partent toutes seules. Vérifie le nombre de copies reçues dans l'onglet 3 (bouton « Relever les copies »).</li>
-    <li>Quand toutes les copies sont là, <strong>Donner la correction</strong> : chaque élève voit sa note, le détail de ses réponses et ses axes de travail.</li>
+    <li>Onglet 2, <strong>Ouvrir la séance</strong>, puis <strong>Projection</strong> : les élèves voient l'adresse et le code de la séance, tapent leur nom, leur prénom et ce code.</li>
+    <li>Un élève qui a droit à un temps majoré reçoit, en aparté, le <strong>code de séance à temps majoré</strong>.</li>
+    <li>Ensuite, chaque élève avance seul : il clique sur « Commencer », puis sur « Question suivante » après chaque réponse. Chaque question a son chrono. Après la dernière, sa copie part toute seule.</li>
+    <li>Ta page relève les copies toutes les 15 secondes et affiche qui a fini et qui compose encore.</li>
+    <li>Quand tout le monde a fini (ou pour arrêter les retardataires), <strong>Clôturer l'épreuve</strong> : les pages encore ouvertes s'arrêtent et envoient leur copie.</li>
+    <li>Puis <strong>Donner la correction</strong> : chaque élève voit sa note, le détail et ses axes de travail. Les notes sont dans l'onglet 3 (export CSV).</li>
   </ol>
   <h2>Si quelque chose ne va pas</h2>
   <ul>
@@ -229,7 +229,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
   function charger() { try { S = JSON.parse(localStorage.getItem(cleStock()) || "null"); } catch (e) { S = null; } if (!S || S.v !== 2) S = nouvelEtat(); }
   function sauver() { try { localStorage.setItem(cleStock(), JSON.stringify(S)); } catch (e) {} }
   function choisis() { return D.slots.filter(function (s) { return S.choix.indexOf(s.id) >= 0; }); }
-  function nbLances() { return S.lances.length; }
+  function nbLances() { return S.phase === "pret" ? 0 : choisis().length; }
   function suiteSeance() {
     var m = 0; choisis().forEach(function (s) { m |= 1 << (s.seq - 1); });
     return ("0000" + m.toString(16).toUpperCase()).slice(-5);
@@ -420,21 +420,14 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
       h += '<p>Code de la séance : <span class="grand-code">' + codeSeance(E.codes.seance) + "</span></p>";
       h += '<p class="discret">Code de séance à temps majoré (× ' + String(D.tiers).replace(".", ",") + "), à donner en aparté : <strong class=\"mono\">" + codeSeance(E.codes.tiers) + "</strong></p></div>";
     }
-    if (S.phase === "accueil" || S.phase === "question") {
+    if (S.phase === "accueil") {
       var pres = Object.keys(S.presents).length;
       h += "<p>Élèves connectés (vus par la liaison) : <strong>" + pres + "</strong> " + (pres ? '<span class="discret">' + eleves().map(function (e) { return echapper(e.prenom + " " + e.nom); }).join(", ") + "</span>" : "") + ' <button class="bouton second" type="button" id="btn-presents">Actualiser</button></p>';
-      if (dernier) {
-        var num = S.lances.length;
-        h += '<div class="carte"><h3>Question ' + num + " sur " + N + "</h3>";
-        h += '<p>Code : <span class="grand-code">' + joli(E.codes.rangs[num - 1]) + "</span></p>";
-        h += '<p>Temps restant : <span class="chrono" id="chrono-prof"></span> <span class="discret" id="chrono-tt"></span></p>';
-        h += '<p class="discret">Chaque élève a son propre thème à ce rang : le chrono suit la question la plus longue tombée chez les élèves connectés.</p></div>';
-      }
-      h += '<div class="barre-outils">';
-      if (prochain) h += '<button class="bouton grand" type="button" id="btn-suivante">' + (dernier ? "Question suivante (" + prochain + " sur " + N + ")" : "Lancer la question 1") + "</button>";
-      if (dernier) h += '<button class="bouton ' + (prochain ? "second" : "grand") + '" type="button" id="btn-terminer">Terminer l\'épreuve</button>';
-      h += "</div>";
-      if (dernier && !prochain) h += '<div class="encadre">Dernière question. Quand le temps est écoulé, termine l\'épreuve : les copies partent alors toutes seules.</div>';
+      var el0 = eleves(), finis = el0.filter(function (e) { return e.copie; });
+      h += '<div class="carte"><h3>Épreuve en cours : les élèves avancent seuls</h3><p>Copies reçues : <strong>' + finis.length + "</strong> sur " + el0.length + " élève(s) connecté(s). La page relève les copies toute seule toutes les 15 secondes.</p>";
+      var enCours = el0.filter(function (e) { return !e.copie; });
+      if (enCours.length) h += '<p class="discret">Encore en train de composer : ' + enCours.map(function (e) { return echapper(e.prenom + " " + e.nom); }).join(", ") + ".</p>";
+      h += '</div><p><button class="bouton grand" type="button" id="btn-terminer">Clôturer l\'épreuve</button></p><p class="discret">À faire quand tout le monde a fini, ou pour arrêter les retardataires : leur page s\'arrête et envoie leur copie (les questions non traitées comptent zéro).</p>';
     }
     if (S.phase === "fin" || S.phase === "corr") {
       h += '<div class="carte"><h3>Épreuve terminée</h3><p>Code de fin (pour les élèves dont la page ne s\'est pas arrêtée seule) : <span class="grand-code">' + joli(E.codes.fin) + "</span></p>";
@@ -515,9 +508,8 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     seance(); afficherResume();
   }
   function terminer() {
-    var reste = resteCourant();
-    if (reste > 3000 && !confirm("Le temps de la dernière question n'est pas écoulé pour tous (" + mmss(reste) + "). Terminer quand même ?")) return;
-    if (choisis().length > S.lances.length && !confirm("Toutes les questions n'ont pas été lancées. Terminer quand même ? Seules les questions lancées seront notées.")) return;
+    var manquent = eleves().filter(function (e) { return !e.copie; }).length;
+    if (manquent && !confirm(manquent + " élève(s) n'ont pas encore fini. Clôturer quand même ? Leur page s'arrêtera et enverra leur copie.")) return;
     S.phase = "fin"; S.fin = Date.now();
     sauver();
     publier({ k: "fin", c: E.codes.fin });
@@ -674,7 +666,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
       if (S.phase === "pret") {
         h = '<div class="p-titre">Évaluation : SQL et PHP</div><div class="p-libelle">La séance n\'est pas encore ouverte.</div>';
       } else if (S.phase === "accueil" || (S.phase === "question" && !d)) {
-        h = '<div class="p-libelle">Ouvre cette adresse, puis tape ton nom, ton prénom et le code de la séance :</div><div class="p-url">' + echapper(D.url) + '</div><div class="p-code" style="font-size:5.5rem">' + codeSeance(E.codes.seance) + "</div>";
+        h = '<div class="p-libelle">Ouvre cette adresse, tape ton nom, ton prénom et le code de la séance, puis avance à ton rythme :</div><div class="p-url">' + echapper(D.url) + '</div><div class="p-code" style="font-size:5.5rem">' + codeSeance(E.codes.seance) + "</div>";
       } else if (S.phase === "question") {
         h = '<div class="p-titre">Question ' + S.lances.length + " sur " + c.length + '</div><div class="p-libelle">Si la question ne s\'ouvre pas toute seule, tape ce code :</div><div class="p-code">' + joli(E.codes.rangs[S.lances.length - 1]) + '</div><div class="p-chrono" id="p-chrono"></div>';
       } else if (S.phase === "fin") {
@@ -682,7 +674,8 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
       } else if (S.phase === "corr") {
         h = '<div class="p-titre">La correction</div><div class="p-libelle">Si ton bilan ne s\'affiche pas tout seul, tape ce code :</div><div class="p-code" style="font-size:5rem">' + codeCorrection() + "</div>";
       }
-      if (S.phase === "accueil" || S.phase === "question") {
+      if (S.phase === "accueil") pied += '<button class="bouton grand" type="button" id="p-terminer">Clôturer l\'épreuve</button>';
+      if (false) {
         if (prochain) pied += '<button class="bouton grand" type="button" id="p-suivante">' + (d ? "Question suivante" : "Lancer la question 1") + "</button>";
         if (d) pied += '<button class="bouton ' + (prochain ? "second" : "grand") + '" type="button" id="p-terminer">Terminer l\'épreuve</button>';
       }

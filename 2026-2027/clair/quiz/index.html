@@ -123,7 +123,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
   <div class="encadre">
     <p><strong>Comment se passe l'évaluation</strong></p>
     <ul>
-      <li>Chaque question s'ouvre quand le professeur la lance. Si elle ne s'ouvre pas toute seule, tape le code affiché au tableau.</li>
+      <li>Tu avances seul : chaque question s'ouvre quand tu cliques sur « Question suivante ».</li>
       <li>Le temps de chaque question est limité. À la fin du temps, la réponse cochée est enregistrée.</li>
       <li>Une réponse validée ne peut plus être modifiée.</li>
       <li>Reste sur cette page jusqu'à la fin : chaque sortie de la page pendant une question est notée.</li>
@@ -145,6 +145,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     <p id="attente-retour" class="message"></p>
     <p><strong id="attente-titre">En attente de la première question.</strong></p>
     <p class="discret" id="attente-progression"></p>
+    <p><button class="bouton" type="button" id="btn-suite">Commencer</button></p>
     <div id="attente-auto" class="encadre ok cache">La question s'ouvrira toute seule dès que le professeur la lancera. Tu n'as rien à taper.
       <br><button class="lien-bouton" type="button" id="btn-saisie">La question ne s'ouvre pas ? Taper le code affiché au tableau</button></div>
     <form id="form-code" autocomplete="off">
@@ -176,7 +177,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     <p><strong>L'épreuve est terminée.</strong></p>
     <div id="fin-envoi" class="encadre"></div>
     <form id="form-corr" autocomplete="off">
-      <p>Le professeur donnera ensuite un code pour afficher ta correction et ton bilan.</p>
+      <p>Ta correction et ton bilan s'afficheront quand le professeur les donnera, une fois que tout le monde aura terminé. Garde cette page ouverte.</p>
       <div class="champ"><label for="code-corr">Code de la correction</label><input id="code-corr" class="code" maxlength="12" spellcheck="false"></div>
       <button class="bouton" type="submit" id="btn-corr">Afficher mon bilan</button>
       <div class="message" id="msg-corr"></div>
@@ -317,9 +318,8 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     majSaisie();
   }
   function majSaisie() {
-    var auto = liaisonActive && !saisieForcee;
-    $("attente-auto").classList.toggle("cache", !auto);
-    $("form-code").classList.toggle("cache", auto);
+    $("attente-auto").classList.add("cache");
+    $("form-code").classList.add("cache");
   }
   $("btn-saisie").addEventListener("click", function () { saisieForcee = true; majSaisie(); $("code-question").focus(); });
 
@@ -340,7 +340,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
 
   function recevoir(m) {
     if (etat.courante || occupe) { enAttente = m; return; }
-    if (m.k === "q" && !etat.fin) {
+    if (m.k === "q" && false) {
       var n = +m.n;
       if (!(n > etat.pos && n <= etat.ordre.length)) return;
       occupe = true;
@@ -388,7 +388,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
         tirage(hdr.ed + "|" + normNom(nom) + "|" + normNom(prenom) + "|ordre").then(function (alea) {
         for (var j = themes.length - 1; j > 0; j--) { var k = Math.floor(alea() * (j + 1)); var x = themes[j]; themes[j] = themes[k]; themes[k] = x; }
         occupe = false; $("btn-accueil").disabled = false;
-        etat = { v: 2, ix: essais[n][0], hdr: hdr, nom: nom, prenom: prenom, debut: Date.now(), ordre: themes, pos: 0, cle: "", rep: {}, sujets: {}, courante: null, fin: false, envoye: false, remise: "", bilan: null };
+        etat = { v: 2, ix: essais[n][0], hdr: hdr, nom: nom, prenom: prenom, debut: Date.now(), ordre: themes, pos: 0, cle: hdr.cle, rep: {}, sujets: {}, courante: null, fin: false, envoye: false, remise: "", bilan: null };
         sauver();
         message("msg-accueil", "");
         afficherNom();
@@ -411,7 +411,8 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     montrer("attente");
     message("attente-retour", retour, genre);
     var n = etat.pos;
-    $("attente-titre").textContent = n === 0 ? "En attente de la première question." : "En attente de la question suivante.";
+    $("attente-titre").textContent = n === 0 ? "Quand tu es prêt, clique sur « Commencer ». Le chrono de la première question part aussitôt." : "Clique sur « Question suivante » quand tu es prêt.";
+    $("btn-suite").textContent = n === 0 ? "Commencer" : "Question suivante (" + (n + 1) + " sur " + etat.ordre.length + ")";
     $("attente-progression").textContent = (n === 0 ? "" : "Questions passées : " + n + " sur " + etat.ordre.length + ". ") + "Ton épreuve compte " + etat.ordre.length + " question" + (etat.ordre.length > 1 ? "s" : "") + ".";
     $("code-question").value = "";
     message("msg-code", "");
@@ -542,6 +543,12 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     fermerQuestion("validee");
   });
 
+  $("btn-suite").addEventListener("click", function () {
+    if (occupe || etat.courante || etat.fin) return;
+    if (etat.pos >= etat.ordre.length) { terminer(); return; }
+    ouvrirRang(etat.pos + 1, etat.cle);
+  });
+
   function fermerQuestion(statut) {
     var id = etat.courante;
     if (!id) return;
@@ -551,6 +558,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     r.val = Math.min(Date.now(), r.lim);
     etat.courante = null;
     sauver();
+    if (etat.pos >= etat.ordre.length) { terminer(); return; }
     if (statut === "validee") allerAttente("Réponse enregistrée.", "ok");
     else if (r.choix >= 0) allerAttente("Temps écoulé : la réponse cochée a été enregistrée.", "ok");
     else allerAttente("Temps écoulé : aucune réponse n'a été cochée pour cette question.", "erreur");

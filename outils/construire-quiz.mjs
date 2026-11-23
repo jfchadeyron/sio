@@ -89,13 +89,13 @@ async function main() {
       rangs: slots.map(() => code()),
     };
     const ctrl = sujet(), res = sujet();
+    const brute = alea(32);
     const entete = (mult) => ({
-      ed, label, mult, ntfy: NTFY, ctrl, res, pub: { kty: pub.kty, crv: pub.crv, x: pub.x, y: pub.y },
+      ed, label, mult, cle: b64(brute), ntfy: NTFY, ctrl, res, pub: { kty: pub.kty, crv: pub.crv, x: pub.x, y: pub.y },
       slots: slots.map((s) => ({ id: s.id, seq: s.seq, tp: s.tp, tag: s.tag, duree: s.duree })),
     });
     // Les énoncés (sans les réponses) sont scellés par une clé de contenu ; chaque code de rang
     // donne cette clé et le numéro du rang.
-    const brute = alea(32);
     const cleContenu = await subtle.importKey("raw", brute, "AES-GCM", false, ["encrypt"]);
     const q = {};
     for (const s of slots) {
