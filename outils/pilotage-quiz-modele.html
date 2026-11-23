@@ -108,7 +108,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
 <!-- 1. Préparer -->
 <section class="panneau" id="p-preparer">
   <h2>Choisir les questions</h2>
-  <p>Coche les thèmes à évaluer. Chaque thème donne <strong>une question</strong> par élève, tirée parmi 4 variantes. Ne garde que les TP réellement terminés par le groupe.</p>
+  <p>Coche les thèmes à évaluer. Chaque thème donne <strong>une question</strong> par élève, tirée parmi 4 variantes. Chaque élève reçoit les thèmes dans un ordre qui lui est propre, et les propositions mélangées. Ne garde que les TP réellement terminés par le groupe.</p>
   <div class="barre-outils" id="raccourcis">
     <button class="bouton second" type="button" data-tp="10">TP 10 seul</button>
     <button class="bouton second" type="button" data-tp="11">TP 10 et 11</button>
@@ -124,7 +124,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
 <section class="panneau cache" id="p-seance">
   <div id="seance-contenu"></div>
   <details class="carte sans-impression" id="bloc-reponses">
-    <summary><strong>Voir la question en cours et ses réponses</strong> (ne pas projeter)</summary>
+    <summary><strong>Voir toutes les questions de l'épreuve et leurs réponses</strong> (ne pas projeter)</summary>
     <div id="reponses-courantes"></div>
   </details>
 </section>
@@ -168,8 +168,8 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
   <ol>
     <li>Onglet 2, <strong>Ouvrir la séance</strong>, puis <strong>Projection</strong> : les élèves voient l'adresse et le code de la séance. Ils tapent leur nom, leur prénom et ce code. La liste des présents se remplit quand la liaison fonctionne.</li>
     <li>Un élève qui a droit à un temps majoré reçoit, en aparté, le <strong>code de séance à temps majoré</strong> (onglet 2) à la place du code normal : toutes ses questions durent un tiers de plus.</li>
-    <li><strong>Lancer la question 1</strong> : la question s'ouvre seule chez les élèves si la liaison fonctionne ; sinon ils tapent le code projeté. Le temps de chaque élève part de l'ouverture chez lui.</li>
-    <li>Quand le temps est écoulé, <strong>Question suivante</strong>. Un élève qui n'a pas ouvert une question à temps ne peut plus l'ouvrir ensuite : elle compte zéro.</li>
+    <li><strong>Lancer la question 1</strong> : la question s'ouvre seule chez les élèves si la liaison fonctionne ; sinon ils tapent le code projeté. Chaque élève reçoit, à ce rang, un thème différent de ses voisins. Le temps de chaque élève part de l'ouverture chez lui.</li>
+    <li>Quand le chrono est écoulé, <strong>Question suivante</strong>. Le chrono suit la question la plus longue tombée à ce rang chez les élèves connectés. Un élève qui n'a pas ouvert une question à temps ne peut plus l'ouvrir ensuite : elle compte zéro.</li>
     <li>Après la dernière question, <strong>Terminer l'épreuve</strong> : les copies partent toutes seules. Vérifie le nombre de copies reçues dans l'onglet 3 (bouton « Relever les copies »).</li>
     <li>Quand toutes les copies sont là, <strong>Donner la correction</strong> : chaque élève voit sa note, le détail de ses réponses et ses axes de travail.</li>
   </ol>
@@ -185,8 +185,8 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
   </ul>
   <h2>Ce qu'il faut savoir</h2>
   <ul>
-    <li>Le sujet publié est chiffré question par question : tant que tu n'as pas donné son code, une question est illisible, même en fouillant la page. Les bonnes réponses ne sont envoyées aux élèves qu'avec le code de correction.</li>
-    <li>Chaque élève reçoit une variante par thème, tirée d'après son nom, et les propositions sont mélangées : deux voisins ont rarement la même question, et jamais dans le même ordre.</li>
+    <li>Le sujet publié est chiffré : avant le code de la question 1, aucun énoncé n'est lisible, même en fouillant la page. Les bonnes réponses sont chiffrées à part et n'arrivent qu'avec le code de correction. (Comme chaque élève a son propre ordre, l'ouverture de la question 1 donne à sa page de quoi lire ses énoncés ; un élève très habile pourrait les lire en avance en fouillant le code, mais jamais les réponses.)</li>
+    <li>Chaque élève reçoit les thèmes dans un ordre propre, une variante par thème, et des propositions mélangées : tous tirés d'après son nom. Deux voisins n'ont presque jamais la même question au même moment.</li>
     <li>Les copies et la liste des présents sont chiffrées pour cette page : le relais ntfy.sh ne voit passer que du texte illisible. Les ordres « question suivante » passent en clair (ils ne contiennent que le code projeté).</li>
     <li>La note est sur 20 : une question réussie vaut 1 point, ramené sur 20 et arrondi au demi-point. Pas de point négatif.</li>
     <li>Cette page garde la progression dans ce navigateur : utilise toujours le même navigateur, sur le même poste, pendant toute l'épreuve.</li>
@@ -225,15 +225,35 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
 
   // ───────── état de la séance (gardé dans ce navigateur) ─────────
   function cleStock() { return "sio-pilotage-quiz:" + ed + ":" + E.codes.seance; }
-  function nouvelEtat() { return { choix: D.slots.map(function (s) { return s.id; }), phase: "pret", debut: 0, lances: [], fin: 0, corr: "", presents: {}, copies: {} }; }
-  function charger() { try { S = JSON.parse(localStorage.getItem(cleStock()) || "null"); } catch (e) { S = null; } if (!S) S = nouvelEtat(); }
+  function nouvelEtat() { return { v: 2, choix: D.slots.map(function (s) { return s.id; }), phase: "pret", debut: 0, lances: [], fin: 0, corr: "", presents: {}, copies: {} }; }
+  function charger() { try { S = JSON.parse(localStorage.getItem(cleStock()) || "null"); } catch (e) { S = null; } if (!S || S.v !== 2) S = nouvelEtat(); }
   function sauver() { try { localStorage.setItem(cleStock(), JSON.stringify(S)); } catch (e) {} }
   function choisis() { return D.slots.filter(function (s) { return S.choix.indexOf(s.id) >= 0; }); }
-  function masque() {
-    var m = 0;
-    S.lances.forEach(function (l) { m |= 1 << (slot(l.id).seq - 1); });
-    return ("000" + m.toString(16).toUpperCase()).slice(-4);
+  function nbLances() { return S.lances.length; }
+  function suiteSeance() {
+    var m = 0; choisis().forEach(function (s) { m |= 1 << (s.seq - 1); });
+    return ("0000" + m.toString(16).toUpperCase()).slice(-5);
   }
+  function codeSeance(code) { return joli(code) + " " + suiteSeance(); }
+  function codeCorrection() { return joli(E.codes.correction) + " " + nbLances(); }
+
+  // Le même tirage que la page des élèves : il donne l'ordre des thèmes de chaque élève.
+  function normNom(t) { return sansAccents(String(t)).toLowerCase().replace(/[^a-z]/g, ""); }
+  var ordres = {};
+  function ordreEleve(nom, prenom) {
+    var cle = cleEleve(nom, prenom) + "|" + S.choix.slice().sort().join(",");
+    if (ordres[cle]) return Promise.resolve(ordres[cle]);
+    var themes = choisis().map(function (s) { return s.id; });
+    return subtle.digest("SHA-256", new TextEncoder().encode(ed + "|" + normNom(nom) + "|" + normNom(prenom) + "|ordre")).then(function (h) {
+      var o = new Uint8Array(h), a = ((o[0] << 24) | (o[1] << 16) | (o[2] << 8) | o[3]) >>> 0;
+      var alea = function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+      for (var j = themes.length - 1; j > 0; j--) { var k = Math.floor(alea() * (j + 1)); var x = themes[j]; themes[j] = themes[k]; themes[k] = x; }
+      ordres[cle] = themes;
+      return themes;
+    });
+  }
+  function ordreConnu(e) { return ordres[cleEleve(e.nom, e.prenom) + "|" + S.choix.slice().sort().join(",")] || null; }
+  function calculerOrdres() { return Promise.all(eleves().map(function (e) { return ordreEleve(e.nom, e.prenom); })); }
 
   // ───────── relais ntfy.sh ─────────
   function publier(objet) {
@@ -299,7 +319,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
         sauver();
         liaison(true);
         if (manuel) $("msg-relever").textContent = "Relevé terminé. " + nbCopies() + " copie(s) au total.";
-        rafraichir();
+        return calculerOrdres().then(rafraichir);
       })
       .catch(function () {
         liaison(false);
@@ -317,18 +337,16 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
 
   // ───────── notes ─────────
   function noter(copie) {
-    var lances = S.lances.map(function (l) { return l.id; });
-    var detail = {}, bonnes = 0, sorties = 0;
-    lances.forEach(function (id) {
-      var r = copie.r.filter(function (x) { return x[0] === id; })[0];
-      var s = slot(id);
-      if (!r || r[2] < 0) detail[id] = "vide";
+    var M = nbLances(), detail = {}, bonnes = 0, sorties = 0;
+    copie.r.forEach(function (r) {
+      var id = r[0], rang = r[6], s = slot(id);
+      if (!s || S.choix.indexOf(id) < 0 || !(rang >= 1 && rang <= M) || detail[id]) return;
+      if (r[2] < 0) detail[id] = "vide";
       else if (s.variants[r[1]] && r[2] === s.variants[r[1]].ok) { detail[id] = "ok"; bonnes++; }
       else detail[id] = "non";
-      if (r) sorties += r[4];
+      sorties += r[4];
     });
-    var n = lances.length;
-    return { bonnes: bonnes, n: n, note: n ? Math.round(bonnes / n * 40) / 2 : 0, detail: detail, sorties: sorties };
+    return { bonnes: bonnes, n: M, note: M ? Math.round(bonnes / M * 40) / 2 : 0, detail: detail, sorties: sorties };
   }
   function eleves() {
     var cles = Object.keys(S.presents);
@@ -376,32 +394,44 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
 
   function lanceCourant() { return S.lances[S.lances.length - 1] || null; }
 
+  // Durée de la question en cours : la plus longue parmi les thèmes tombés à ce rang chez les élèves connus.
+  function dureesRang(rang) {
+    var normal = 0, majore = 0, connus = 0;
+    eleves().forEach(function (e) {
+      var o = ordreConnu(e); if (!o || !o[rang - 1]) return;
+      connus++;
+      var d = slot(o[rang - 1]).duree;
+      if (e.mult > 1) majore = Math.max(majore, d * e.mult); else normal = Math.max(normal, d);
+    });
+    if (!connus) normal = Math.max.apply(null, choisis().map(function (s) { return s.duree; }));
+    return { normal: normal, majore: majore };
+  }
+
   function seance() {
-    var c = choisis(), h = "";
+    var c = choisis(), N = c.length, h = "";
     var dernier = lanceCourant();
-    var prochain = c.filter(function (s) { return !S.lances.some(function (l) { return l.id === s.id; }); })[0];
+    var prochain = S.lances.length < N ? S.lances.length + 1 : 0;
     if (S.phase === "pret") {
-      h += "<h2>Ouvrir la séance</h2><p>Séance <strong>" + echapper(E.label) + "</strong>, " + c.length + " question(s) choisie(s). Le choix des questions sera verrouillé.</p>";
-      h += c.length ? '<p><button class="bouton grand" type="button" id="btn-ouvrir">Ouvrir la séance</button></p>' : '<div class="encadre attention">Choisis au moins une question dans l\'onglet 1.</div>';
+      h += "<h2>Ouvrir la séance</h2><p>Séance <strong>" + echapper(E.label) + "</strong>, " + N + " question(s) choisie(s). Chaque élève les recevra dans un ordre qui lui est propre. Le choix des questions sera verrouillé.</p>";
+      h += N ? '<p><button class="bouton grand" type="button" id="btn-ouvrir">Ouvrir la séance</button></p>' : '<div class="encadre attention">Choisis au moins une question dans l\'onglet 1.</div>';
     }
     if (S.phase !== "pret") {
       h += '<div class="carte"><p>Adresse pour les élèves : <strong class="mono">' + echapper(D.url) + '</strong></p>';
-      h += '<p>Code de la séance : <span class="grand-code">' + joli(E.codes.seance) + "</span></p>";
-      h += '<p class="discret">Code de séance à temps majoré (× ' + String(D.tiers).replace(".", ",") + "), à donner en aparté : <strong class=\"mono\">" + joli(E.codes.tiers) + "</strong></p></div>";
+      h += '<p>Code de la séance : <span class="grand-code">' + codeSeance(E.codes.seance) + "</span></p>";
+      h += '<p class="discret">Code de séance à temps majoré (× ' + String(D.tiers).replace(".", ",") + "), à donner en aparté : <strong class=\"mono\">" + codeSeance(E.codes.tiers) + "</strong></p></div>";
     }
     if (S.phase === "accueil" || S.phase === "question") {
       var pres = Object.keys(S.presents).length;
       h += "<p>Élèves connectés (vus par la liaison) : <strong>" + pres + "</strong> " + (pres ? '<span class="discret">' + eleves().map(function (e) { return echapper(e.prenom + " " + e.nom); }).join(", ") + "</span>" : "") + ' <button class="bouton second" type="button" id="btn-presents">Actualiser</button></p>';
-    }
-    if (S.phase === "accueil" || S.phase === "question") {
       if (dernier) {
-        var s = slot(dernier.id), num = S.lances.length;
-        h += '<div class="carte"><h3>Question ' + num + " sur " + c.length + " : " + echapper(s.theme) + " (TP " + s.tp + ")</h3>";
-        h += '<p>Code : <span class="grand-code">' + joli(E.codes.questions[s.id]) + "</span></p>";
-        h += '<p>Temps restant : <span class="chrono" id="chrono-prof"></span> <span class="discret" id="chrono-tt"></span></p></div>';
+        var num = S.lances.length;
+        h += '<div class="carte"><h3>Question ' + num + " sur " + N + "</h3>";
+        h += '<p>Code : <span class="grand-code">' + joli(E.codes.rangs[num - 1]) + "</span></p>";
+        h += '<p>Temps restant : <span class="chrono" id="chrono-prof"></span> <span class="discret" id="chrono-tt"></span></p>';
+        h += '<p class="discret">Chaque élève a son propre thème à ce rang : le chrono suit la question la plus longue tombée chez les élèves connectés.</p></div>';
       }
       h += '<div class="barre-outils">';
-      if (prochain) h += '<button class="bouton grand" type="button" id="btn-suivante">' + (dernier ? "Question suivante (" + (S.lances.length + 1) + " sur " + c.length + ")" : "Lancer la question 1") + "</button>";
+      if (prochain) h += '<button class="bouton grand" type="button" id="btn-suivante">' + (dernier ? "Question suivante (" + prochain + " sur " + N + ")" : "Lancer la question 1") + "</button>";
       if (dernier) h += '<button class="bouton ' + (prochain ? "second" : "grand") + '" type="button" id="btn-terminer">Terminer l\'épreuve</button>';
       h += "</div>";
       if (dernier && !prochain) h += '<div class="encadre">Dernière question. Quand le temps est écoulé, termine l\'épreuve : les copies partent alors toutes seules.</div>';
@@ -414,7 +444,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
       if (manquent.length) h += '<p class="discret">Copie manquante : ' + manquent.map(function (e) { return echapper(e.prenom + " " + e.nom); }).join(", ") + ". Ces élèves peuvent cliquer sur « Renvoyer ma copie », ou t'envoyer leur code de remise.</p>";
       h += "</div>";
       if (S.phase === "fin") h += '<p><button class="bouton grand" type="button" id="btn-corr">Donner la correction aux élèves</button></p><p class="discret">À faire quand toutes les copies sont relevées : après la correction, les élèves connaissent les bonnes réponses.</p>';
-      else h += '<div class="carte"><h3>Correction donnée</h3><p>Code de la correction : <span class="grand-code">' + joli(E.codes.correction) + " " + masque() + "</span></p></div>";
+      else h += '<div class="carte"><h3>Correction donnée</h3><p>Code de la correction : <span class="grand-code">' + codeCorrection() + "</span></p></div>";
     }
     $("seance-contenu").innerHTML = h;
     var b;
@@ -427,8 +457,8 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     tic();
   }
 
-  function variantesHTML(s) {
-    var h = "<p><strong>" + echapper(s.theme) + "</strong> (TP " + s.tp + ", " + s.duree + " s). Axe de travail donné aux élèves : " + echapper(s.axe) + "</p>";
+  function variantesHTML(s, n) {
+    var h = "<h3>" + n + ". " + echapper(s.theme) + " (TP " + s.tp + ", " + s.duree + " s)</h3><p class=\"discret\">Axe de travail donné aux élèves : " + echapper(s.axe) + "</p>";
     s.variants.forEach(function (v, i) {
       h += '<div class="variante"><p><strong>Variante ' + (i + 1) + ".</strong> " + v.q + "</p>";
       if (v.code) h += '<pre class="bloc">' + echapper(v.code) + "</pre>";
@@ -440,24 +470,21 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     return h;
   }
   function reponsesCourantes() {
-    var d = lanceCourant();
-    $("bloc-reponses").classList.toggle("cache", !d);
-    if (d) $("reponses-courantes").innerHTML = variantesHTML(slot(d.id));
+    $("reponses-courantes").innerHTML = choisis().map(function (s, i) { return variantesHTML(s, i + 1); }).join("");
   }
 
   function tic() {
     clearInterval(minuteur);
     var maj = function () {
-      var d = lanceCourant();
-      var reste = d ? d.t + slot(d.id).duree * 1000 - Date.now() : 0;
-      var resteTT = d ? d.t + slot(d.id).duree * D.tiers * 1000 - Date.now() : 0;
-      var actif = d && (S.phase === "question");
+      var d = lanceCourant(), actif = d && S.phase === "question";
+      var du = actif ? dureesRang(S.lances.length) : null;
+      var reste = actif ? d.t + du.normal * 1000 - Date.now() : 0;
+      var resteTT = actif ? d.t + du.majore * 1000 - Date.now() : 0;
       var el = $("chrono-prof");
       if (el) {
         el.textContent = actif ? mmss(reste) : "--:--";
         el.className = "chrono" + (actif && reste <= 0 ? " fini" : "");
-        var tt = eleves().some(function (e) { return e.mult > 1; });
-        $("chrono-tt").textContent = actif && tt && resteTT > 0 && reste <= 0 ? "Temps majoré encore en cours : " + mmss(resteTT) : "";
+        $("chrono-tt").textContent = actif && du.majore && resteTT > 0 ? "Temps majoré : " + mmss(resteTT) : "";
       }
       projeter(actif ? reste : null);
     };
@@ -471,23 +498,26 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     S.phase = "accueil"; S.debut = Date.now();
     sauver(); tableChoix(); seance(); afficherResume(); relevePeriodique();
   }
-  function lancerSuivante(s) {
+  function resteCourant() {
     var d = lanceCourant();
-    if (d && S.phase === "question") {
-      var reste = d.t + slot(d.id).duree * 1000 - Date.now();
-      if (reste > 3000 && !confirm("Le temps de la question en cours n'est pas écoulé (" + mmss(reste) + "). Lancer quand même la suivante ?")) return;
-    }
-    S.lances.push({ id: s.id, t: Date.now() });
+    if (!d || S.phase !== "question") return 0;
+    var du = dureesRang(S.lances.length);
+    return d.t + Math.max(du.normal, du.majore) * 1000 - Date.now();
+  }
+  function lancerSuivante(rang) {
+    if (!rang || rang > choisis().length) return;
+    var reste = resteCourant();
+    if (reste > 3000 && !confirm("Le temps de la question en cours n'est pas écoulé pour tous (" + mmss(reste) + "). Lancer quand même la suivante ?")) return;
+    S.lances.push({ rang: rang, t: Date.now() });
     S.phase = "question";
     sauver();
-    publier({ k: "q", n: s.seq, c: E.codes.questions[s.id] });
+    publier({ k: "q", n: rang, c: E.codes.rangs[rang - 1] });
     seance(); afficherResume();
   }
   function terminer() {
-    var d = lanceCourant();
-    var reste = d ? d.t + slot(d.id).duree * 1000 - Date.now() : 0;
-    if (reste > 3000 && !confirm("Le temps de la dernière question n'est pas écoulé (" + mmss(reste) + "). Terminer quand même ?")) return;
-    if (choisis().length > S.lances.length && !confirm("Toutes les questions choisies n'ont pas été lancées. Terminer quand même ? Seules les questions lancées seront notées.")) return;
+    var reste = resteCourant();
+    if (reste > 3000 && !confirm("Le temps de la dernière question n'est pas écoulé pour tous (" + mmss(reste) + "). Terminer quand même ?")) return;
+    if (choisis().length > S.lances.length && !confirm("Toutes les questions n'ont pas été lancées. Terminer quand même ? Seules les questions lancées seront notées.")) return;
     S.phase = "fin"; S.fin = Date.now();
     sauver();
     publier({ k: "fin", c: E.codes.fin });
@@ -497,7 +527,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
   function donnerCorrection() {
     var el = eleves(), manquent = el.filter(function (e) { return !e.copie; }).length;
     if (manquent && !confirm(manquent + " copie(s) manquent encore. Après la correction, les élèves connaîtront les réponses. Donner la correction quand même ?")) return;
-    S.phase = "corr"; S.corr = E.codes.correction + masque();
+    S.phase = "corr"; S.corr = E.codes.correction + nbLances();
     sauver();
     publier({ k: "corr", c: S.corr });
     seance(); afficherResume(); rafraichir();
@@ -508,28 +538,32 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     if (panneau === "resultats") resultats();
     if (panneau === "seance") seance();
   }
+  // Pour un élève et un thème : "ok", "non", "vide" (posé sans réponse ou non ouvert), ou "" (pas posé).
+  function caseTheme(e, n, id) {
+    if (n.detail[id]) return n.detail[id];
+    var o = ordreConnu(e);
+    if (o) { var i = o.indexOf(id); return i >= 0 && i < nbLances() ? "vide" : ""; }
+    return "";
+  }
   function resultats() {
-    var el = eleves(), lances = S.lances.map(function (l) { return l.id; });
+    var el = eleves(), themes = choisis(), M = nbLances();
     var h = "<h2>Résultats de la séance " + echapper(E.label) + "</h2>";
-    if (!lances.length) { $("resultats-contenu").innerHTML = h + "<p>Aucune question n'a encore été lancée.</p>"; return; }
-    h += "<p>" + lances.length + " question(s) notée(s). " + el.filter(function (e) { return e.copie; }).length + " copie(s) reçue(s) sur " + el.length + " élève(s).</p>";
+    if (!M) { $("resultats-contenu").innerHTML = h + "<p>Aucune question n'a encore été lancée.</p>"; return; }
+    h += "<p>" + M + " question(s) posée(s) à chaque élève, sur " + themes.length + " thème(s) : comme l'ordre change d'un élève à l'autre, les colonnes suivent les thèmes. Une case vide : thème non posé à cet élève. " + el.filter(function (e) { return e.copie; }).length + " copie(s) reçue(s) sur " + el.length + " élève(s).</p>";
     h += '<table class="liste"><tr><th>Nom</th><th>Prénom</th><th>Note / 20</th><th>Bonnes</th>';
-    lances.forEach(function (id, i) { h += '<th class="c" title="' + echapper(slot(id).theme) + '">Q' + (i + 1) + "</th>"; });
+    themes.forEach(function (s, i) { h += '<th class="c" title="' + echapper(s.theme) + '">T' + (i + 1) + "</th>"; });
     h += "<th>Sorties de page</th><th>Remarque</th></tr>";
-    var parQ = lances.map(function () { return [0, 0]; }), notes = [];
+    var parT = themes.map(function () { return [0, 0]; }), notes = [];
     el.forEach(function (e) {
       h += "<tr><td>" + echapper(e.nom.toUpperCase()) + "</td><td>" + echapper(e.prenom) + "</td>";
-      if (!e.copie) {
-        h += '<td colspan="' + (lances.length + 3) + '" class="vide">Pas de copie reçue</td><td></td></tr>';
-        return;
-      }
+      if (!e.copie) { h += '<td colspan="' + (themes.length + 3) + '" class="vide">Pas de copie reçue</td><td></td></tr>'; return; }
       var n = noter(e.copie);
       notes.push(n.note);
       h += "<td><strong>" + String(n.note).replace(".", ",") + "</strong></td><td>" + n.bonnes + " / " + n.n + "</td>";
-      lances.forEach(function (id, i) {
-        var d = n.detail[id];
-        parQ[i][1]++; if (d === "ok") parQ[i][0]++;
-        h += '<td class="c ' + d + '">' + (d === "ok" ? "1" : d === "non" ? "0" : "–") + "</td>";
+      themes.forEach(function (s, i) {
+        var d = caseTheme(e, n, s.id);
+        if (d) { parT[i][1]++; if (d === "ok") parT[i][0]++; }
+        h += '<td class="c ' + d + '">' + (d === "ok" ? "1" : d === "non" ? "0" : d === "vide" ? "–" : "") + "</td>";
       });
       var rem = [];
       if (e.mult > 1) rem.push("temps majoré");
@@ -542,11 +576,11 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     if (notes.length) {
       var moy = notes.reduce(function (a, b) { return a + b; }, 0) / notes.length;
       h += "<p>Moyenne : <strong>" + moy.toFixed(1).replace(".", ",") + " / 20</strong> sur " + notes.length + " copie(s). Plus basse : " + String(Math.min.apply(null, notes)).replace(".", ",") + ", plus haute : " + String(Math.max.apply(null, notes)).replace(".", ",") + ".</p>";
-      h += "<h2>Réussite par question</h2><p>Pour préparer la remédiation : les notions les moins réussies sont à reprendre en classe.</p>";
-      h += '<table class="liste"><tr><th>Q</th><th>TP</th><th>Thème</th><th>Réussite</th></tr>';
-      lances.forEach(function (id, i) {
-        var s = slot(id), p = parQ[i][1] ? parQ[i][0] / parQ[i][1] : 0;
-        h += "<tr><td>Q" + (i + 1) + "</td><td>" + s.tp + "</td><td>" + echapper(s.theme) + '</td><td><span class="jauge-fond"><span class="jauge" style="width:' + Math.round(p * 120) + 'px"></span></span>' + Math.round(p * 100) + " % (" + parQ[i][0] + " / " + parQ[i][1] + ")</td></tr>";
+      h += "<h2>Réussite par thème</h2><p>Pour préparer la remédiation : les notions les moins réussies sont à reprendre en classe.</p>";
+      h += '<table class="liste"><tr><th>T</th><th>TP</th><th>Thème</th><th>Réussite</th></tr>';
+      themes.forEach(function (s, i) {
+        var p = parT[i][1] ? parT[i][0] / parT[i][1] : 0;
+        h += "<tr><td>T" + (i + 1) + "</td><td>" + s.tp + "</td><td>" + echapper(s.theme) + '</td><td>' + (parT[i][1] ? '<span class="jauge-fond"><span class="jauge" style="width:' + Math.round(p * 120) + 'px"></span></span>' + Math.round(p * 100) + " % (" + parT[i][0] + " / " + parT[i][1] + ")" : '<span class="discret">non posé</span>') + "</td></tr>";
       });
       h += "</table>";
     }
@@ -560,14 +594,13 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     document.body.appendChild(a); a.click(); a.remove();
   }
   $("btn-csv").onclick = function () {
-    var lances = S.lances.map(function (l) { return l.id; });
-    var t = ["Nom", "Prénom", "Note sur 20", "Bonnes réponses", "Questions"].concat(lances.map(function (id, i) { return "Q" + (i + 1) + " " + slot(id).theme; })).concat(["Sorties de page", "Temps majoré", "Copies reçues"]);
-    var lignes = [t];
+    var themes = choisis();
+    var lignes = [["Nom", "Prénom", "Note sur 20", "Bonnes réponses", "Questions posées"].concat(themes.map(function (s, i) { return "T" + (i + 1) + " " + s.theme; })).concat(["Sorties de page", "Temps majoré", "Copies reçues"])];
     eleves().forEach(function (e) {
-      if (!e.copie) { lignes.push([e.nom.toUpperCase(), e.prenom, "ABS", "", lances.length]); return; }
+      if (!e.copie) { lignes.push([e.nom.toUpperCase(), e.prenom, "ABS", "", nbLances()]); return; }
       var n = noter(e.copie);
       lignes.push([e.nom.toUpperCase(), e.prenom, String(n.note).replace(".", ","), n.bonnes, n.n]
-        .concat(lances.map(function (id) { return n.detail[id] === "ok" ? 1 : 0; }))
+        .concat(themes.map(function (s) { var d = caseTheme(e, n, s.id); return d === "ok" ? 1 : d ? 0 : ""; }))
         .concat([n.sorties, e.mult > 1 ? "oui" : "non", e.nb]));
     });
     var csv = "﻿" + lignes.map(function (l) { return l.map(function (c) { c = String(c); return /[;"\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(";"); }).join("\r\n");
@@ -590,7 +623,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
       sauver();
       $("msg-coller").textContent = ok + " copie(s) ajoutée(s)" + (autre ? ", " + autre + " d'une autre séance" : "") + (illisible ? ", " + illisible + " illisible(s)" : "") + ".";
       if (ok) $("coller").value = "";
-      rafraichir();
+      calculerOrdres().then(rafraichir);
     });
   };
   $("btn-raz").onclick = function () {
@@ -601,19 +634,15 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
   // ───────── codes de secours ─────────
   function secours() {
     var c = choisis();
-    var h = "<p>Séance <strong>" + echapper(E.label) + "</strong>. Adresse : <span class=\"mono\">" + echapper(D.url) + "</span></p>";
+    var h = "<p>Séance <strong>" + echapper(E.label) + "</strong>, " + c.length + " question(s). Adresse : <span class=\"mono\">" + echapper(D.url) + "</span></p>";
     h += '<table class="liste"><tr><th>Étape</th><th>Code</th></tr>';
-    h += "<tr><td>Code de la séance</td><td class=\"mono\"><strong>" + joli(E.codes.seance) + "</strong></td></tr>";
-    h += "<tr><td>Code de la séance à temps majoré (en aparté)</td><td class=\"mono\">" + joli(E.codes.tiers) + "</td></tr>";
-    c.forEach(function (s, i) { h += "<tr><td>Question " + (i + 1) + " : " + echapper(s.theme) + " (" + s.duree + " s)</td><td class=\"mono\"><strong>" + joli(E.codes.questions[s.id]) + "</strong></td></tr>"; });
+    h += "<tr><td>Code de la séance</td><td class=\"mono\"><strong>" + codeSeance(E.codes.seance) + "</strong></td></tr>";
+    h += "<tr><td>Code de la séance à temps majoré (en aparté)</td><td class=\"mono\">" + codeSeance(E.codes.tiers) + "</td></tr>";
+    c.forEach(function (s, i) { h += "<tr><td>Question " + (i + 1) + "</td><td class=\"mono\"><strong>" + joli(E.codes.rangs[i]) + "</strong></td></tr>"; });
     h += "<tr><td>Fin de l'épreuve</td><td class=\"mono\"><strong>" + joli(E.codes.fin) + "</strong></td></tr>";
-    h += "<tr><td>Correction (à donner après le relevé des copies)</td><td class=\"mono\"><strong>" + joli(E.codes.correction) + "</strong> suivi de " + masqueChoix() + "</td></tr>";
-    h += "</table><p class=\"discret\">Les 4 caractères après le code de correction indiquent les questions lancées : ceux de la ligne ci-dessus valent si toutes les questions cochées ont été lancées.</p>";
+    h += "<tr><td>Correction (à donner après le relevé des copies)</td><td class=\"mono\"><strong>" + joli(E.codes.correction) + "</strong> suivi du nombre de questions lancées (" + c.length + " si toutes l'ont été)</td></tr>";
+    h += "</table><p class=\"discret\">Les 5 derniers caractères du code de séance indiquent les thèmes choisis : si tu changes le choix des questions, réimprime cette feuille.</p>";
     $("secours-contenu").innerHTML = h;
-  }
-  function masqueChoix() {
-    var m = 0; choisis().forEach(function (s) { m |= 1 << (s.seq - 1); });
-    return "<strong>" + ("000" + m.toString(16).toUpperCase()).slice(-4) + "</strong>";
   }
 
   // ───────── projection ─────────
@@ -641,17 +670,17 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
     if (force || cle !== dernierePhase) {
       dernierePhase = cle;
       var h = "", pied = "";
-      var c = choisis(), prochain = c.filter(function (s) { return !S.lances.some(function (l) { return l.id === s.id; }); })[0];
+      var c = choisis(), prochain = S.lances.length < c.length ? S.lances.length + 1 : 0;
       if (S.phase === "pret") {
         h = '<div class="p-titre">Évaluation : SQL et PHP</div><div class="p-libelle">La séance n\'est pas encore ouverte.</div>';
       } else if (S.phase === "accueil" || (S.phase === "question" && !d)) {
-        h = '<div class="p-libelle">Ouvre cette adresse, puis tape ton nom, ton prénom et le code de la séance :</div><div class="p-url">' + echapper(D.url) + '</div><div class="p-code">' + joli(E.codes.seance) + "</div>";
+        h = '<div class="p-libelle">Ouvre cette adresse, puis tape ton nom, ton prénom et le code de la séance :</div><div class="p-url">' + echapper(D.url) + '</div><div class="p-code" style="font-size:5.5rem">' + codeSeance(E.codes.seance) + "</div>";
       } else if (S.phase === "question") {
-        h = '<div class="p-titre">Question ' + S.lances.length + " sur " + c.length + '</div><div class="p-libelle">Si la question ne s\'ouvre pas toute seule, tape ce code :</div><div class="p-code">' + joli(E.codes.questions[d.id]) + '</div><div class="p-chrono" id="p-chrono"></div>';
+        h = '<div class="p-titre">Question ' + S.lances.length + " sur " + c.length + '</div><div class="p-libelle">Si la question ne s\'ouvre pas toute seule, tape ce code :</div><div class="p-code">' + joli(E.codes.rangs[S.lances.length - 1]) + '</div><div class="p-chrono" id="p-chrono"></div>';
       } else if (S.phase === "fin") {
         h = '<div class="p-titre">L\'épreuve est terminée</div><div class="p-libelle">Si ta page ne s\'est pas arrêtée toute seule, tape ce code :</div><div class="p-code">' + joli(E.codes.fin) + '</div><div class="p-libelle">Garde la page ouverte : la correction arrive.</div>';
       } else if (S.phase === "corr") {
-        h = '<div class="p-titre">La correction</div><div class="p-libelle">Si ton bilan ne s\'affiche pas tout seul, tape ce code :</div><div class="p-code" style="font-size:5rem">' + joli(E.codes.correction) + " " + masque() + "</div>";
+        h = '<div class="p-titre">La correction</div><div class="p-libelle">Si ton bilan ne s\'affiche pas tout seul, tape ce code :</div><div class="p-code" style="font-size:5rem">' + codeCorrection() + "</div>";
       }
       if (S.phase === "accueil" || S.phase === "question") {
         if (prochain) pied += '<button class="bouton grand" type="button" id="p-suivante">' + (d ? "Question suivante" : "Lancer la question 1") + "</button>";
@@ -696,6 +725,7 @@ pre.bloc { background: var(--code-fond); border: 1px solid var(--trait); border-
 
   function tout() {
     tableChoix(); seance(); afficherResume(); secours();
+    calculerOrdres().then(rafraichir);
     if (panneau === "resultats") resultats();
     relevePeriodique();
   }

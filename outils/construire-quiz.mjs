@@ -10,8 +10,10 @@
 // banque.js publié doivent toujours venir du même lancement.
 //
 // Rien de secret n'est écrit dans le dépôt : la banque en clair et la page de pilotage restent
-// chez le professeur. Le sujet publié est chiffré question par question (PBKDF2 + AES-GCM) ;
-// chaque question ne s'ouvre qu'avec le code donné en classe.
+// chez le professeur. Chaque élève traite les thèmes dans un ordre qui lui est propre : le
+// professeur lance donc des rangs (question 1, question 2...) et non des thèmes. Les énoncés
+// sont chiffrés (AES-GCM) et ne s'ouvrent qu'avec un code de rang donné en classe ; les bonnes
+// réponses sont chiffrées à part et n'arrivent qu'avec le code de correction.
 // Aucune dépendance : Node 20 ou plus récent (WebCrypto intégré).
 
 import { readFile, writeFile, mkdir } from "node:fs/promises";
@@ -84,20 +86,28 @@ async function main() {
     const priv = await subtle.exportKey("jwk", paire.privateKey);
     const codes = {
       seance: code(), tiers: code(), fin: code(), correction: code(),
-      questions: Object.fromEntries(slots.map((s) => [s.id, code()])),
+      rangs: slots.map(() => code()),
     };
     const ctrl = sujet(), res = sujet();
     const entete = (mult) => ({
       ed, label, mult, ntfy: NTFY, ctrl, res, pub: { kty: pub.kty, crv: pub.crv, x: pub.x, y: pub.y },
       slots: slots.map((s) => ({ id: s.id, seq: s.seq, tp: s.tp, tag: s.tag, duree: s.duree })),
     });
+    // Les énoncés (sans les réponses) sont scellés par une clé de contenu ; chaque code de rang
+    // donne cette clé et le numéro du rang.
+    const brute = alea(32);
+    const cleContenu = await subtle.importKey("raw", brute, "AES-GCM", false, ["encrypt"]);
     const q = {};
     for (const s of slots) {
-      q[s.id] = await sceller({
+      const iv = alea(12);
+      const donnees = await subtle.encrypt({ name: "AES-GCM", iv }, cleContenu, new TextEncoder().encode(JSON.stringify({
         id: s.id, tag: s.tag,
         variants: s.variants.map((v) => ({ q: v.q, code: v.code || "", table: !!v.table, oc: !!v.oc, o: v.o })),
-      }, codes.questions[s.id]);
+      })));
+      q[s.id] = { i: b64(iv), d: b64(donnees) };
     }
+    const e = [];
+    for (let k = 1; k <= slots.length; k++) e.push(await sceller({ rang: k, cle: b64(brute) }, codes.rangs[k - 1]));
     const corr = {
       slots: Object.fromEntries(slots.map((s) => [s.id, {
         theme: s.theme, tp: s.tp, axe: s.axe, ref: s.ref,
@@ -108,7 +118,7 @@ async function main() {
       a: await sceller(entete(1), codes.seance),
       b: await sceller(entete(TIERS_TEMPS), codes.tiers),
       f: await sceller({ fin: ed }, codes.fin),
-      q,
+      e, q,
       c: await sceller(corr, codes.correction),
     });
     privees.push({ ed, label, codes, ctrl, res, priv, pub });
@@ -117,8 +127,8 @@ async function main() {
 
   // Le sujet publié : l'ordre des éditions est mélangé pour ne rien révéler.
   const melange = publiques.map((p, i) => [alea(1)[0], p]).sort((x, y) => x[0] - y[0]).map((x) => x[1]);
-  const js = "/* Évaluation SQL et PHP : sujet chiffré. Chaque question s'ouvre avec le code donné en classe. */\n"
-    + "window.BANQUE_QUIZ = " + JSON.stringify({ v: 1, iter: ITER, editions: melange }) + ";\n";
+  const js = "/* Évaluation SQL et PHP : sujet chiffré. Les questions s'ouvrent avec les codes donnés en classe. */\n"
+    + "window.BANQUE_QUIZ = " + JSON.stringify({ v: 2, iter: ITER, editions: melange }) + ";\n";
   await mkdir(path.join(dossierEleves, "quiz"), { recursive: true });
   await writeFile(path.join(dossierEleves, "quiz", "banque.js"), js, "utf8");
 

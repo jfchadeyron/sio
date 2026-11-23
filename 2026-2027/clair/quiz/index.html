@@ -46,8 +46,10 @@ button { font: inherit; cursor: pointer; }
 .message { margin-top: 10px; font-size: 0.95rem; min-height: 1.4em; }
 .message.erreur { color: var(--rouge); font-weight: 600; }
 .message.ok { color: var(--vert); font-weight: 600; }
+#attente-retour:empty { display: none; }
 .discret { font-size: 0.85rem; color: var(--texte-pale); }
 .cache { display: none !important; }
+.lien-bouton { background: none; border: none; color: var(--lien); text-decoration: underline; padding: 0; margin-top: 4px; font-size: 0.9rem; }
 
 /* La question */
 .q-tete { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--trait); padding-bottom: 8px; margin-bottom: 14px; }
@@ -125,13 +127,13 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
       <li>Le temps de chaque question est limité. À la fin du temps, la réponse cochée est enregistrée.</li>
       <li>Une réponse validée ne peut plus être modifiée.</li>
       <li>Reste sur cette page jusqu'à la fin : chaque sortie de la page pendant une question est notée.</li>
-      <li>Les questions portent sur les TP. Chacun a ses propres questions : inutile de regarder l'écran du voisin.</li>
+      <li>Les questions portent sur les TP. Chacun a ses propres questions, dans son propre ordre : inutile de regarder l'écran du voisin.</li>
     </ul>
   </div>
   <form id="form-accueil" class="cadre" autocomplete="off">
     <div class="champ"><label for="nom">Nom</label><input id="nom" required maxlength="40"></div>
     <div class="champ"><label for="prenom">Prénom</label><input id="prenom" required maxlength="40"></div>
-    <div class="champ"><label for="code-seance">Code de la séance</label><input id="code-seance" class="code" required maxlength="9" spellcheck="false"></div>
+    <div class="champ"><label for="code-seance">Code de la séance</label><input id="code-seance" class="code" required maxlength="16" spellcheck="false" style="max-width:300px"></div>
     <button class="bouton" type="submit" id="btn-accueil">Commencer</button>
     <div class="message" id="msg-accueil"></div>
   </form>
@@ -143,6 +145,8 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     <p id="attente-retour" class="message"></p>
     <p><strong id="attente-titre">En attente de la première question.</strong></p>
     <p class="discret" id="attente-progression"></p>
+    <div id="attente-auto" class="encadre ok cache">La question s'ouvrira toute seule dès que le professeur la lancera. Tu n'as rien à taper.
+      <br><button class="lien-bouton" type="button" id="btn-saisie">La question ne s'ouvre pas ? Taper le code affiché au tableau</button></div>
     <form id="form-code" autocomplete="off">
       <div class="champ"><label for="code-question">Code affiché au tableau</label><input id="code-question" class="code" maxlength="9" spellcheck="false"></div>
       <button class="bouton" type="submit" id="btn-code">Ouvrir</button>
@@ -173,7 +177,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     <div id="fin-envoi" class="encadre"></div>
     <form id="form-corr" autocomplete="off">
       <p>Le professeur donnera ensuite un code pour afficher ta correction et ton bilan.</p>
-      <div class="champ"><label for="code-corr">Code de la correction</label><input id="code-corr" class="code" maxlength="14" spellcheck="false"></div>
+      <div class="champ"><label for="code-corr">Code de la correction</label><input id="code-corr" class="code" maxlength="12" spellcheck="false"></div>
       <button class="bouton" type="submit" id="btn-corr">Afficher mon bilan</button>
       <div class="message" id="msg-corr"></div>
     </form>
@@ -221,6 +225,8 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
   var occupe = false;       // une vérification de code est en cours
   var enAttente = null;     // code reçu par la liaison pendant une question ouverte
   var source = null;        // liaison avec le poste du professeur
+  var liaisonActive = false;
+  var saisieForcee = false; // l'élève a demandé à taper le code lui-même
 
   // ───────── outils ─────────
   function echapper(t) {
@@ -253,6 +259,13 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
       .catch(function () { return null; });
   }
 
+  function ouvrirAvecCle(boite, cleB64) {
+    return subtle.importKey("raw", versOctets(cleB64), "AES-GCM", false, ["decrypt"])
+      .then(function (k) { return subtle.decrypt({ name: "AES-GCM", iv: versOctets(boite.i) }, k, versOctets(boite.d)); })
+      .then(function (clair) { return JSON.parse(new TextDecoder().decode(clair)); })
+      .catch(function () { return null; });
+  }
+
   // Tirage propre à chaque élève : même nom, même séance, mêmes questions.
   function tirage(cleTexte) {
     return subtle.digest("SHA-256", new TextEncoder().encode(cleTexte)).then(function (h) {
@@ -269,7 +282,6 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
   }
 
   function slotParId(id) { return etat.hdr.slots.filter(function (s) { return s.id === id; })[0]; }
-  function slotParSeq(n) { return etat.hdr.slots.filter(function (s) { return s.seq === n; })[0]; }
   function nbOuvertes() { return Object.keys(etat.rep).length; }
 
   // ───────── liaison (ntfy.sh) ─────────
@@ -298,10 +310,18 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
   }
 
   function etatLiaison(actif) {
+    liaisonActive = !!actif;
     $("liaison").textContent = actif
-      ? "Liaison avec le poste du professeur : active. Les questions s'ouvriront toutes seules."
+      ? "Liaison avec le poste du professeur : active."
       : "Liaison automatique indisponible : tape le code affiché au tableau.";
+    majSaisie();
   }
+  function majSaisie() {
+    var auto = liaisonActive && !saisieForcee;
+    $("attente-auto").classList.toggle("cache", !auto);
+    $("form-code").classList.toggle("cache", auto);
+  }
+  $("btn-saisie").addEventListener("click", function () { saisieForcee = true; majSaisie(); $("code-question").focus(); });
 
   function demarrerLiaison() {
     if (source || !window.EventSource || etat.bilan) return;
@@ -321,12 +341,12 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
   function recevoir(m) {
     if (etat.courante || occupe) { enAttente = m; return; }
     if (m.k === "q" && !etat.fin) {
-      var s = slotParSeq(m.n);
-      if (!s || s.seq <= etat.seq) return;
+      var n = +m.n;
+      if (!(n > etat.pos && n <= etat.ordre.length)) return;
       occupe = true;
-      ouvrirBoite(BANQUE.editions[etat.ix].q[s.id], normCode(m.c)).then(function (charge) {
+      ouvrirBoite(BANQUE.editions[etat.ix].e[n - 1], normCode(m.c)).then(function (r) {
         occupe = false;
-        if (charge) ouvrirQuestion(s, charge); else traiterAttente();
+        if (r && r.rang === n) ouvrirRang(n, r.cle); else traiterAttente();
       });
     } else if (m.k === "fin" && !etat.fin) {
       verifierFin(normCode(m.c)).then(function (ok) { if (ok) terminer(); });
@@ -345,9 +365,11 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
   $("form-accueil").addEventListener("submit", function (ev) {
     ev.preventDefault();
     if (occupe) return;
-    var nom = joliNom($("nom").value), prenom = joliNom($("prenom").value), code = normCode($("code-seance").value);
+    var nom = joliNom($("nom").value), prenom = joliNom($("prenom").value), brut = normCode($("code-seance").value);
+    var code = brut.slice(0, 6), suite = brut.slice(6);
     if (!normNom(nom) || !normNom(prenom)) { message("msg-accueil", "Indique ton nom et ton prénom.", "erreur"); return; }
-    if (code.length < 6) { message("msg-accueil", "Le code de la séance a 6 caractères.", "erreur"); return; }
+    if (code.length < 6 || !/^[0-9A-F]{1,6}$/.test(suite) || !parseInt(suite, 16)) { message("msg-accueil", "Recopie tout le code de la séance affiché au tableau (11 caractères).", "erreur"); return; }
+    var choix = parseInt(suite, 16);
     occupe = true;
     $("btn-accueil").disabled = true;
     message("msg-accueil", "Vérification du code...");
@@ -361,8 +383,12 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
       }
       ouvrirBoite(essais[n][1], code).then(function (hdr) {
         if (!hdr) { suivant(n + 1); return; }
+        var themes = hdr.slots.filter(function (s) { return choix & (1 << (s.seq - 1)); }).map(function (s) { return s.id; });
+        if (!themes.length) { occupe = false; $("btn-accueil").disabled = false; message("msg-accueil", "Code de séance incomplet.", "erreur"); return; }
+        tirage(hdr.ed + "|" + normNom(nom) + "|" + normNom(prenom) + "|ordre").then(function (alea) {
+        for (var j = themes.length - 1; j > 0; j--) { var k = Math.floor(alea() * (j + 1)); var x = themes[j]; themes[j] = themes[k]; themes[k] = x; }
         occupe = false; $("btn-accueil").disabled = false;
-        etat = { v: 1, ix: essais[n][0], hdr: hdr, nom: nom, prenom: prenom, debut: Date.now(), seq: 0, rep: {}, sujets: {}, courante: null, fin: false, envoye: false, remise: "", bilan: null };
+        etat = { v: 2, ix: essais[n][0], hdr: hdr, nom: nom, prenom: prenom, debut: Date.now(), ordre: themes, pos: 0, cle: "", rep: {}, sujets: {}, courante: null, fin: false, envoye: false, remise: "", bilan: null };
         sauver();
         message("msg-accueil", "");
         afficherNom();
@@ -370,6 +396,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
           .then(publier).catch(function () {});
         demarrerLiaison();
         allerAttente("");
+        });
       });
     })(0);
   });
@@ -383,13 +410,12 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
   function allerAttente(retour, genre) {
     montrer("attente");
     message("attente-retour", retour, genre);
-    var n = nbOuvertes();
+    var n = etat.pos;
     $("attente-titre").textContent = n === 0 ? "En attente de la première question." : "En attente de la question suivante.";
-    $("attente-progression").textContent = n === 0 ? "" : "Questions déjà traitées : " + n + ".";
+    $("attente-progression").textContent = (n === 0 ? "" : "Questions passées : " + n + " sur " + etat.ordre.length + ". ") + "Ton épreuve compte " + etat.ordre.length + " question" + (etat.ordre.length > 1 ? "s" : "") + ".";
     $("code-question").value = "";
     message("msg-code", "");
-    etatLiaison(source && source.readyState === 1);
-    if (!window.EventSource) etatLiaison(false);
+    etatLiaison(!!(source && source.readyState === 1));
     setTimeout(traiterAttente, 50);
   }
 
@@ -405,10 +431,10 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     occupe = true;
     $("btn-code").disabled = true;
     message("msg-code", "Vérification du code...");
-    var restants = etat.hdr.slots.filter(function (s) { return s.seq > etat.seq; }).sort(function (a, b) { return a.seq - b.seq; });
-    var essais = restants.slice(0, 1).map(function (s) { return ["q", s]; });
+    var essais = [];
+    if (etat.pos < etat.ordre.length) essais.push(["q", etat.pos + 1]);
     essais.push(["fin"]);
-    restants.slice(1).forEach(function (s) { essais.push(["q", s]); });
+    for (var r = etat.pos + 2; r <= etat.ordre.length; r++) essais.push(["q", r]);
     (function suivant(n) {
       if (n >= essais.length) {
         occupe = false; $("btn-code").disabled = false;
@@ -423,27 +449,39 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
         });
         return;
       }
-      var s = essais[n][1];
-      ouvrirBoite(BANQUE.editions[etat.ix].q[s.id], code).then(function (charge) {
-        if (!charge) { suivant(n + 1); return; }
+      var rang = essais[n][1];
+      ouvrirBoite(BANQUE.editions[etat.ix].e[rang - 1], code).then(function (res) {
+        if (!res || res.rang !== rang) { suivant(n + 1); return; }
         occupe = false; $("btn-code").disabled = false;
-        ouvrirQuestion(s, charge);
+        ouvrirRang(rang, res.cle);
       });
     })(0);
   });
 
   // ───────── la question ─────────
-  function ouvrirQuestion(s, charge) {
-    if (etat.fin || s.seq <= etat.seq) return;
+  function ouvrirRang(rang, cle) {
+    if (etat.fin || rang <= etat.pos) return;
+    var id = etat.ordre[rang - 1];
+    if (!id) return;
+    etat.cle = cle;
+    occupe = true;
+    ouvrirAvecCle(BANQUE.editions[etat.ix].q[id], cle).then(function (charge) {
+      occupe = false;
+      if (charge) ouvrirQuestion(slotParId(id), rang, charge);
+    });
+  }
+
+  function ouvrirQuestion(s, rang, charge) {
+    if (etat.fin || rang <= etat.pos) return;
     tirage(etat.hdr.ed + "|" + normNom(etat.nom) + "|" + normNom(etat.prenom) + "|" + s.id).then(function (alea) {
       var v = Math.floor(alea() * charge.variants.length);
       var n = charge.variants[v].o.length, perm = [];
       for (var i = 0; i < n; i++) perm.push(i);
       for (var j = n - 1; j > 0; j--) { var k = Math.floor(alea() * (j + 1)); var x = perm[j]; perm[j] = perm[k]; perm[k] = x; }
       var maintenant = Date.now();
-      etat.seq = s.seq;
+      etat.pos = rang;
       etat.sujets[s.id] = charge;
-      etat.rep[s.id] = { v: v, perm: perm, num: nbOuvertes() + 1, ouv: maintenant, lim: maintenant + Math.round(s.duree * etat.hdr.mult * 1000), choix: -1, val: 0, statut: "ouverte", sorties: 0 };
+      etat.rep[s.id] = { v: v, perm: perm, num: rang, ouv: maintenant, lim: maintenant + Math.round(s.duree * etat.hdr.mult * 1000), choix: -1, val: 0, statut: "ouverte", sorties: 0 };
       etat.courante = s.id;
       sauver();
       afficherQuestion();
@@ -555,7 +593,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     if (etat.remise) return Promise.resolve();
     var lignes = Object.keys(etat.rep).map(function (id) {
       var r = etat.rep[id];
-      return [id, r.v, r.choix, Math.max(0, (r.val || r.lim) - r.ouv), r.sorties, r.statut === "validee" ? "v" : "e"];
+      return [id, r.v, r.choix, Math.max(0, (r.val || r.lim) - r.ouv), r.sorties, r.statut === "validee" ? "v" : "e", r.num];
     });
     return chiffrerPourProf({ k: "copie", ed: etat.hdr.ed, nom: etat.nom, prenom: etat.prenom, mult: etat.hdr.mult, debut: etat.debut, t: Date.now(), r: lignes })
       .then(function (texte) { etat.remise = texte; sauver(); });
@@ -611,12 +649,9 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     ouvrirBoite(BANQUE.editions[etat.ix].c, code).then(function (corr) {
       occupe = false;
       if (!corr) { if (!auto) message("msg-corr", "Code non reconnu.", "erreur"); return; }
-      var lances = null;
-      if (/^[0-9A-F]{1,8}$/.test(masque)) {
-        var bits = parseInt(masque, 16);
-        lances = etat.hdr.slots.filter(function (s) { return bits & (1 << (s.seq - 1)); }).map(function (s) { return s.id; });
-      }
-      if (!lances || !lances.length) lances = Object.keys(etat.rep);
+      var nb = /^[0-9]{1,2}$/.test(masque) ? parseInt(masque, 10) : etat.pos;
+      if (!(nb >= 1)) nb = etat.pos;
+      var lances = etat.ordre.slice(0, Math.min(nb, etat.ordre.length));
       etat.bilan = { corr: corr, lances: lances };
       sauver();
       if (source) { source.close(); source = null; }
@@ -626,7 +661,6 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
 
   function afficherBilan() {
     var corr = etat.bilan.corr, lances = etat.bilan.lances.slice();
-    lances.sort(function (a, b) { return slotParId(a).seq - slotParId(b).seq; });
     var bonnes = 0, lignes = [], parTp = {}, aRevoir = [], acquis = [];
     lances.forEach(function (id, i) {
       var s = slotParId(id), c = corr.slots[id], r = etat.rep[id];
@@ -704,7 +738,7 @@ textarea.remise { width: 100%; height: 90px; font-family: Consolas, Menlo, monos
     return;
   }
   etat = charger();
-  if (etat && (!etat.hdr || etat.v !== 1 || !BANQUE.editions[etat.ix] || !etat.hdr.slots)) etat = null;
+  if (etat && (!etat.hdr || etat.v !== 2 || !BANQUE.editions[etat.ix] || !BANQUE.editions[etat.ix].e || !etat.ordre)) etat = null;
   if (!etat) { montrer("accueil"); return; }
   afficherNom();
   if (etat.bilan) { afficherBilan(); return; }
